@@ -1,0 +1,127 @@
+:root {
+  --mustard: #e0a527;
+  --mustard-soft: #f2cf7e;
+  --rust: #c1531b;
+  --rust-deep: #9c4014;
+  --brown: #4a2e1e;
+  --brown-soft: #6b4a34;
+  --cream: #f4e3c1;
+  --cream-soft: #fff9ec;
+  --teal: #2e7060;
+  --teal-deep: #1f4f43;
+
+  --accent: var(--rust);
+  --accent-deep: var(--rust-deep);
+
+  --success: #2e7060;
+  --danger: #a3261e;
+  --warning: #e0a527;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 8px 24px -12px rgba(74, 46, 30, 0.25);
+  --shadow-pop: 0 16px 40px -16px rgba(74, 46, 30, 0.35);
+
+  --font-display: 'Baloo 2', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--brown);
+  font-family: var(--font-body);
+  line-height: 1.5;
+
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+::selection {
+  background: var(--rust);
+  color: #fff;
+}
+
+html[lang='ar'] body {
+  font-family: 'Cairo', var(--font-body);
+}
+html[lang='ar'] h1,
+html[lang='ar'] h2,
+html[lang='ar'] h3,
+html[lang='ar'] h4 {
+  font-family: 'Cairo', var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+body {
+  min-width: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (max-width: 600px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

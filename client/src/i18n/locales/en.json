@@ -1,0 +1,139 @@
+{
+  "brand": {
+    "tagline": "Sharp cuts. Old-world craft."
+  },
+  "lang": {
+    "switchTo": "العربية"
+  },
+  "nav": {
+    "home": "Home",
+    "book": "Book",
+    "barbers": "Barbers",
+    "shop": "Shop",
+    "myAppointments": "My Appointments",
+    "dashboard": "Dashboard",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "home": {
+    "badge": "Good Vibes, Great Cuts",
+    "heroCta": "Book your groove",
+    "heroSecondary": "Meet the crew",
+    "barbersTitle": "Meet the Barbers",
+    "servicesTitle": "Services & Prices"
+  },
+  "booking": {
+    "title": "Book your chair",
+    "back": "Back",
+    "continue": "Continue",
+    "confirm": "Confirm booking",
+    "name": "Full name",
+    "phone": "Phone number",
+    "services": "Services",
+    "total": "Total",
+    "coupon": "Coupon code (optional)",
+    "guestCodeLabel": "Have a booking code?",
+    "guestCodeHint": "If you registered before, enter your 5-digit code to book without signing in. The phone number above must match the one on your account.",
+    "success": "You're booked in!",
+    "successBody": "We've noted your appointment. See you soon.",
+    "booked": "Booked",
+    "onHoliday": "Unavailable"
+  },
+  "barbersPage": {
+    "title": "Meet the Barbers",
+    "bookWith": "Book with {{name}}",
+    "reviews": "Reviews",
+    "noReviews": "No reviews yet."
+  },
+  "shop": {
+    "title": "Shop",
+    "inStock": "{{count}} in stock",
+    "outOfStock": "Out of stock"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create your account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Full name",
+    "phone": "Phone number",
+    "birthday": "Birthday (optional)",
+    "submitLogin": "Sign in",
+    "submitRegister": "Create account",
+    "haveAccount": "Already have an account?",
+    "noAccount": "New here?",
+    "forgotPassword": "Forgot password?",
+    "signingIn": "Signing in...",
+    "creating": "Creating...",
+    "createAccount": "Create an account",
+    "resetTitle": "Reset your password",
+    "sendReset": "Send reset link",
+    "sending": "Sending...",
+    "resetSent": "If that email exists, a reset link has been sent.",
+    "setNewPassword": "Set a new password",
+    "newPassword": "New password",
+    "saving": "Saving...",
+    "resetPassword": "Reset password",
+    "missingReset": "Missing or invalid reset link.",
+    "requestNewLink": "Request a new link",
+    "emailVerified": "Email verified!",
+    "goHome": "Go home"
+  },
+  "myAppointments": {
+    "title": "My Appointments",
+    "empty": "No appointments yet.",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel",
+    "leaveReview": "Leave a review",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "canceled": "Canceled",
+      "rejected": "Rejected",
+      "completed": "Completed",
+      "no_show": "No-show",
+      "passed": "Passed"
+    },
+    "rescheduleTitle": "Reschedule appointment",
+    "newTime": "New time (HH:mm)",
+    "confirmNewTime": "Confirm new time",
+    "reviewTitle": "Leave a review",
+    "canceledToast": "Appointment canceled.",
+    "rescheduledToast": "Appointment rescheduled.",
+    "reviewToast": "Thanks for your review!"
+  },
+  "footer": {
+    "tagline": "Retro chairs, warm colors, cuts that never go out of style."
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "profile": {
+    "title": "My Profile",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "birthday": "Birthday",
+    "save": "Save changes",
+    "changePassword": "Change Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "updatePassword": "Update password",
+    "updated": "Profile updated.",
+    "passwordUpdated": "Password updated. Please sign in again."
+  },
+  "reviews": {
+    "title": "Reviews",
+    "none": "No reviews yet.",
+    "count": "{{count}} reviews",
+    "submit": "Submit review",
+    "rating": "Rating",
+    "comment": "Comment"
+  },
+  "notFound": {
+    "message": "This page doesn't exist.",
+    "home": "Back home",
+    "barber": "Barber not found."
+  }
+}
