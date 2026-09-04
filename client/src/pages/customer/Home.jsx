@@ -72,7 +72,7 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.85, delay: 0.1 }}
           >
-            <img src="/assets/faytarouni-hero.png" alt={lang === 'ar' ? 'تصميم صالون فيطروني' : 'Faytarouni barbershop'} />
+            <img src="/assets/photo-1503951914875-452162b0f3f1" alt={lang === 'ar' ? 'تصميم صالون فيطروني' : 'Faytarouni barbershop'} />
             <div className="wave-floating-card">
               <span>{lang === 'ar' ? 'الموعد التالي' : 'Next available'}</span>
               <strong>{lang === 'ar' ? 'اليوم · 6:30 مساءً' : 'Today · 6:30 PM'}</strong>
@@ -163,7 +163,7 @@ export default function Home() {
             <p>{lang === 'ar' ? 'الموجات والزوايا والألوان تتحول بسلاسة بينما تبقى الحسابات والحجز والإشعارات آمنة ومستقرة.' : 'Waves, angles and colors morph smoothly while accounts, booking and notifications stay stable and secure.'}</p>
           </motion.div>
           <motion.div className="wave-gallery-art" {...reveal}>
-            <img src="/assets/faytarouni-showcase.png" alt={lang === 'ar' ? 'معاينة تصميم فيطروني' : 'Faytarouni design showcase'} />
+            <img src="/assets/photo-1503951914875-452162b0f3f1" alt={lang === 'ar' ? 'معاينة تصميم فيطروني' : 'Faytarouni design showcase'} />
           </motion.div>
         </div>
       </section>
