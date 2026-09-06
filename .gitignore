@@ -1,0 +1,34 @@
+# Dependencies
+server/node_modules/
+client/node_modules/
+
+# Secrets — NEVER push these
+server/.env
+server/.env.local
+server/.env.production
+client/.env
+client/.env.local
+client/.env.production
+
+# Backups (JSON exports from the admin dashboard)
+server/backups/*
+!server/backups/.gitkeep
+
+# Build output
+client/dist/
+client/build/
+
+# Logs
+*.log
+server/logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

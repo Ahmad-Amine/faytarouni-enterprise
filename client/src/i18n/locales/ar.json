@@ -1,0 +1,166 @@
+{
+  "brand": {
+    "tagline": "قصات أنيقة. حرفية أصيلة."
+  },
+  "lang": {
+    "switchTo": "EN"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "book": "احجز",
+    "barbers": "الحلاقون",
+    "shop": "المتجر",
+    "myAppointments": "مواعيدي",
+    "dashboard": "لوحة التحكم",
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "menu": "القائمة",
+    "bookNow": "احجز الآن"
+  },
+  "home": {
+    "badge": "أجواء رائعة، قصات أروع",
+    "heroCta": "احجز كرسيك",
+    "heroSecondary": "تعرف على الفريق",
+    "barbersTitle": "تعرف على الحلاقين",
+    "servicesTitle": "الخدمات والأسعار",
+    "premiumBarbering": "حلاقة احترافية",
+    "meetTeam": "تعرّف على الفريق",
+    "heroAlt": "صالون فيتاروني للحلاقة",
+    "onlineBooking": "الحجز أونلاين",
+    "marqueePrecision": "دقة",
+    "marqueeHaircuts": "قصات شعر",
+    "marqueeBeard": "تصميم اللحية",
+    "servicesTag": "الخدمات",
+    "teamTag": "الفريق",
+    "serviceFallback": "خدمة احترافية بتفاصيل دقيقة.",
+    "barberFallback": "قصات عصرية وتفاصيل دقيقة.",
+    "nextCut": "قصتك القادمة على بعد نقرة.",
+    "registeredOnly": "الحجز متاح للعملاء المسجّلين للحفاظ على المواعيد وبيانات العملاء."
+  },
+  "booking": {
+    "title": "احجز كرسيك",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "confirm": "تأكيد الحجز",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "services": "الخدمات",
+    "total": "الإجمالي",
+    "coupon": "كود الخصم (اختياري)",
+    "success": "تم حجز كرسيك",
+    "successBody": "تم تسجيل موعدك. نراك قريبًا.",
+    "booked": "محجوز",
+    "onHoliday": "غير متاح",
+    "countryCodeLocked": "رمز الدولة مطابق للرمز المحفوظ في حسابك ولا يمكن تغييره هنا.",
+    "loginRequired": "سجّل الدخول أو أنشئ حسابًا لإتمام الحجز."
+  },
+  "barbersPage": {
+    "title": "تعرف على الحلاقين",
+    "bookWith": "احجز مع {{name}}",
+    "reviews": "التقييمات",
+    "noReviews": "لا توجد تقييمات بعد."
+  },
+  "shop": {
+    "title": "المتجر",
+    "inStock": "متوفر: {{count}}",
+    "outOfStock": "غير متوفر"
+  },
+  "auth": {
+    "loginTitle": "مرحبًا بعودتك",
+    "registerTitle": "أنشئ حسابك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "birthday": "تاريخ الميلاد (اختياري)",
+    "submitLogin": "تسجيل الدخول",
+    "submitRegister": "إنشاء حساب",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "noAccount": "جديد هنا؟",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "signingIn": "جارٍ تسجيل الدخول...",
+    "creating": "جارٍ إنشاء الحساب...",
+    "createAccount": "إنشاء حساب",
+    "resetTitle": "إعادة تعيين كلمة المرور",
+    "sendReset": "إرسال رابط إعادة التعيين",
+    "sending": "جارٍ الإرسال...",
+    "resetSent": "إذا كان البريد الإلكتروني موجودًا، فقد تم إرسال رابط إعادة التعيين.",
+    "setNewPassword": "تعيين كلمة مرور جديدة",
+    "newPassword": "كلمة المرور الجديدة",
+    "saving": "جارٍ الحفظ...",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "missingReset": "رابط إعادة التعيين مفقود أو غير صالح.",
+    "requestNewLink": "طلب رابط جديد",
+    "emailVerified": "تم تأكيد البريد الإلكتروني!",
+    "goHome": "العودة للرئيسية",
+    "phonePlaceholder": "٧٠ ١٢٣ ٤٥٦"
+  },
+  "myAppointments": {
+    "title": "مواعيدي",
+    "empty": "لا توجد مواعيد بعد.",
+    "reschedule": "إعادة الجدولة",
+    "cancel": "إلغاء",
+    "leaveReview": "أضف تقييمًا",
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "canceled": "ملغى",
+      "rejected": "مرفوض",
+      "completed": "مكتمل",
+      "no_show": "لم يحضر",
+      "passed": "فات موعده"
+    },
+    "rescheduleTitle": "إعادة جدولة الموعد",
+    "newTime": "الوقت الجديد (HH:mm)",
+    "confirmNewTime": "تأكيد الوقت الجديد",
+    "reviewTitle": "أضف تقييمًا",
+    "canceledToast": "تم إلغاء الموعد.",
+    "rescheduledToast": "تمت إعادة جدولة الموعد.",
+    "reviewToast": "شكرًا لتقييمك!"
+  },
+  "footer": {
+    "tagline": "كراسي كلاسيكية، ألوان دافئة، قصات لا تخرج عن الموضة أبدًا."
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "minutesShort": "دقيقة"
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "fullName": "الاسم الكامل",
+    "phone": "الهاتف",
+    "birthday": "تاريخ الميلاد",
+    "save": "حفظ التغييرات",
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "updatePassword": "تحديث كلمة المرور",
+    "updated": "تم تحديث الملف الشخصي.",
+    "passwordUpdated": "تم تحديث كلمة المرور. يرجى تسجيل الدخول مجددًا."
+  },
+  "reviews": {
+    "title": "التقييمات",
+    "none": "لا توجد تقييمات بعد.",
+    "count": "{{count}} تقييم",
+    "submit": "إرسال التقييم",
+    "rating": "التقييم",
+    "comment": "التعليق",
+    "stars": "{{count}} نجوم"
+  },
+  "notFound": {
+    "message": "هذه الصفحة غير موجودة.",
+    "home": "العودة للرئيسية",
+    "barber": "الحلاق غير موجود."
+  },
+  "validation": {
+    "nameRequired": "الاسم مطلوب.",
+    "emailInvalid": "أدخل بريدًا إلكترونيًا صالحًا.",
+    "countryCodeRequired": "اختر رمز الدولة.",
+    "phoneRequired": "رقم الهاتف مطلوب.",
+    "phoneDigits": "أدخل أرقامًا فقط من دون مسافات أو رموز.",
+    "passwordMin": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+    "passwordRequired": "كلمة المرور مطلوبة."
+  }
+}
