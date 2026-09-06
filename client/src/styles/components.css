@@ -1115,64 +1115,64 @@ body {
    and mobile without making the cards themselves oversized.
    ========================================================= */
 
-/* More breathing room inside every major Emerald homepage section. */
+/* Balanced spacing between homepage sections. */
 .emerald-home > .emerald-section {
-  padding-block: clamp(110px, 9vw, 145px);
+  padding-block: clamp(64px, 6vw, 88px);
 }
 
-/* Separate Services from Team even when both use emerald-section. */
+/* Small, consistent gap between Services, Team, and other sections. */
 .emerald-home > .emerald-section + .emerald-section {
-  margin-top: clamp(36px, 4.5vw, 72px);
+  margin-top: clamp(8px, 1.5vw, 20px);
 }
 
-/* Give the barber cards a clear visual break before Online Booking. */
+/* Enough breathing room after barber cards without a large empty area. */
 .emerald-home > .emerald-team-section {
-  padding-bottom: clamp(90px, 8vw, 125px);
+  padding-bottom: clamp(64px, 6vw, 88px);
 }
 
-/* Keep the Online Booking card away from the barber section and footer. */
+/* Balanced separation around the Online Booking card. */
 .emerald-home > .emerald-cta {
-  margin-top: clamp(58px, 6vw, 92px);
-  margin-bottom: clamp(105px, 9vw, 145px);
+  margin-top: clamp(28px, 3vw, 44px);
+  margin-bottom: clamp(64px, 6vw, 88px);
 }
 
 /* Mobile spacing: still generous, but proportionate to the smaller screen. */
 @media (max-width: 620px) {
   .emerald-home > .emerald-section {
-    padding-block: 82px;
+    padding-block: 56px;
   }
 
   .emerald-home > .emerald-section + .emerald-section {
-    margin-top: 36px;
+    margin-top: 8px;
   }
 
   .emerald-home > .emerald-team-section {
-    padding-bottom: 78px;
+    padding-bottom: 58px;
   }
 
   .emerald-home > .emerald-cta {
-    margin-top: 52px;
-    margin-bottom: 92px;
+    margin-top: 28px;
+    margin-bottom: 64px;
   }
 }
 
 /* Very small iPhones: preserve the separation without wasting screen space. */
 @media (max-width: 420px) {
   .emerald-home > .emerald-section {
-    padding-block: 74px;
+    padding-block: 50px;
   }
 
   .emerald-home > .emerald-section + .emerald-section {
-    margin-top: 30px;
+    margin-top: 6px;
   }
 
   .emerald-home > .emerald-team-section {
-    padding-bottom: 70px;
+    padding-bottom: 54px;
   }
 
   .emerald-home > .emerald-cta {
-    margin-top: 46px;
-    margin-bottom: 82px;
+    margin-top: 24px;
+    margin-bottom: 58px;
   }
 }
 
