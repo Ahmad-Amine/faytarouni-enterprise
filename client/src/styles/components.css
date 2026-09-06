@@ -1108,3 +1108,103 @@ body {
 @media (prefers-reduced-motion:reduce) {
   .opening-splash *, .opening-splash *::before, .opening-splash *::after { animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important; }
 }
+
+/* =========================================================
+   FINAL EMERALD HOMEPAGE SECTION SPACING
+   Keeps the main content blocks visually separated on desktop
+   and mobile without making the cards themselves oversized.
+   ========================================================= */
+
+/* More breathing room inside every major Emerald homepage section. */
+.emerald-home > .emerald-section {
+  padding-block: clamp(110px, 9vw, 145px);
+}
+
+/* Separate Services from Team even when both use emerald-section. */
+.emerald-home > .emerald-section + .emerald-section {
+  margin-top: clamp(36px, 4.5vw, 72px);
+}
+
+/* Give the barber cards a clear visual break before Online Booking. */
+.emerald-home > .emerald-team-section {
+  padding-bottom: clamp(90px, 8vw, 125px);
+}
+
+/* Keep the Online Booking card away from the barber section and footer. */
+.emerald-home > .emerald-cta {
+  margin-top: clamp(58px, 6vw, 92px);
+  margin-bottom: clamp(105px, 9vw, 145px);
+}
+
+/* Mobile spacing: still generous, but proportionate to the smaller screen. */
+@media (max-width: 620px) {
+  .emerald-home > .emerald-section {
+    padding-block: 82px;
+  }
+
+  .emerald-home > .emerald-section + .emerald-section {
+    margin-top: 36px;
+  }
+
+  .emerald-home > .emerald-team-section {
+    padding-bottom: 78px;
+  }
+
+  .emerald-home > .emerald-cta {
+    margin-top: 52px;
+    margin-bottom: 92px;
+  }
+}
+
+/* Very small iPhones: preserve the separation without wasting screen space. */
+@media (max-width: 420px) {
+  .emerald-home > .emerald-section {
+    padding-block: 74px;
+  }
+
+  .emerald-home > .emerald-section + .emerald-section {
+    margin-top: 30px;
+  }
+
+  .emerald-home > .emerald-team-section {
+    padding-bottom: 70px;
+  }
+
+  .emerald-home > .emerald-cta {
+    margin-top: 46px;
+    margin-bottom: 82px;
+  }
+}
+
+/* =========================================================
+   FINAL BOOKING TIME-SLOT CONTRAST FIX
+   The Booking page currently gives time buttons inline legacy
+   colors. !important is intentional here so Emerald colors win.
+   ========================================================= */
+.theme-emerald .container button.btn[style*="var(--mustard)"] {
+  background: #f4f8f5 !important;
+  color: #071611 !important;
+  border-color: #6fe0a5 !important;
+  font-weight: 850 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  -webkit-text-fill-color: #071611 !important;
+}
+
+.theme-emerald .container button.btn[style*="var(--mustard)"]:not(:disabled):hover,
+.theme-emerald .container button.btn[style*="var(--mustard)"]:not(:disabled):focus-visible {
+  background: #6fe0a5 !important;
+  color: #071611 !important;
+  -webkit-text-fill-color: #071611 !important;
+  border-color: #6fe0a5 !important;
+  box-shadow: 0 0 0 3px rgba(111, 224, 165, 0.18) !important;
+}
+
+.theme-emerald .container button.btn[style*="var(--mustard)"]:disabled {
+  background: rgba(244, 248, 245, 0.10) !important;
+  color: rgba(244, 248, 245, 0.42) !important;
+  -webkit-text-fill-color: rgba(244, 248, 245, 0.42) !important;
+  border-color: rgba(111, 224, 165, 0.22) !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+}
