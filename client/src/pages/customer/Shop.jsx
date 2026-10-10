@@ -28,8 +28,8 @@ export default function Shop() {
             <h3 style={{ fontSize: 15 }}>{localizedProductName(p, lang)}</h3>
             {localizedProductDescription(p, lang) && <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 4 }}>{localizedProductDescription(p, lang)}</p>}
             <p style={{ color: 'var(--accent)', fontWeight: 700, marginTop: 6 }}>${p.price.toFixed(2)}</p>
-            <p style={{ fontSize: 12, color: p.stock > 0 ? 'var(--teal)' : 'var(--danger)', marginTop: 4 }}>
-              {p.stock > 0 ? t('shop.inStock', { count: p.stock }) : t('shop.outOfStock')}
+            <p style={{ fontSize: 12, color: p.inStock ? 'var(--teal)' : 'var(--danger)', marginTop: 4 }}>
+              {p.inStock ? t('shop.inStock') : t('shop.outOfStock')}
             </p>
           </div>
         ))}

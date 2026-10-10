@@ -44,7 +44,7 @@ const serviceSchema = z.object({
 
 const barberSchema = z.object({
   body: z.object({
-    name: z.string().trim().min(1, 'Name is required.'),
+    name: z.string().trim().min(1, 'Name is required.').max(80, 'Name must be at most 80 characters.'),
     user: objectId.optional().nullable(),
     photoUrl: httpsUrlOrEmpty.optional(),
     nameAr: z.string().trim().max(200).optional(),

@@ -1,7 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
-const { barberRepository, appointmentRepository } = require('../repositories');
+const { barberRepository, appointmentRepository, userRepository } = require('../repositories');
 
 // Public pages only show the services the admin assigned to the barber that
 // are still active; inactive services drop out of the populated list.
@@ -31,14 +31,24 @@ exports.getByUser = catchAsync(async (req, res) => {
   return new ApiResponse(200, barber || null).send(res);
 });
 
+// The barber's English name is the same as their user account's name; when
+// it changes on the barber profile, rename the linked account too so the
+// staff list, profile page and the barber's own account stay consistent.
+async function syncLinkedUserName(barber) {
+  if (!barber?.user || !barber.name) return;
+  await userRepository.updateById(barber.user, { name: barber.name });
+}
+
 exports.create = catchAsync(async (req, res) => {
   const barber = await barberRepository.create(req.body);
+  await syncLinkedUserName(barber);
   return new ApiResponse(201, barber, 'Barber added.').send(res);
 });
 
 exports.update = catchAsync(async (req, res, next) => {
   const barber = await barberRepository.updateById(req.params.id, req.body);
   if (!barber) return next(ApiError.notFound('Barber not found.'));
+  await syncLinkedUserName(barber);
   return new ApiResponse(200, barber, 'Barber updated.').send(res);
 });
 

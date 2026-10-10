@@ -8,6 +8,7 @@ import { Spinner, ErrorBanner } from '../../components/Feedback';
 import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 const emptyBarberForm = {
+  name: '',
   nameAr: '',
   photoUrl: '',
   bio: '',
@@ -85,7 +86,7 @@ export default function Staff() {
   const openEdit = (s) => {
     setEditing(s);
     setEditRoleId(s.role?._id || '');
-    setBarberForm(emptyBarberForm);
+    setBarberForm({ ...emptyBarberForm, name: s.name || '' });
     setBarberId(null);
     setBarberChecked(false);
     setBreakDraft(emptyBreakDraft);
@@ -102,6 +103,7 @@ export default function Staff() {
         if (cancelled || !b) return;
         setBarberId(b._id);
         setBarberForm({
+          name: b.name || editing.name || '',
           nameAr: b.nameAr || '',
           photoUrl: b.photoUrl || '',
           bio: b.bio || '',
@@ -162,7 +164,7 @@ export default function Staff() {
       }
       if (isBarberRole) {
         const payload = {
-          name: editing.name,
+          name: barberForm.name.trim() || editing.name,
           user: editing._id,
           nameAr: barberForm.nameAr,
           photoUrl: barberForm.photoUrl,
@@ -182,6 +184,8 @@ export default function Staff() {
     onSuccess: () => {
       invalidateStaff();
       queryClient.invalidateQueries({ queryKey: ['admin', 'barbers'] });
+      queryClient.invalidateQueries({ queryKey: ['barbers'] });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
       setEditing(null);
     },
     onError: (e) => setError(e.message),
@@ -275,6 +279,7 @@ export default function Staff() {
                 </p>
                 {barberLoading ? <Spinner /> : (
                   <>
+                    <div className="field"><label>Name (English)</label><input className="input" required maxLength={80} value={barberForm.name} onChange={(e) => setBarberForm({ ...barberForm, name: e.target.value })} /><p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 4 }}>Also updates this barber's account name.</p></div>
                     <div className="field"><label>الاسم (Arabic name)</label><input className="input" dir="rtl" lang="ar" placeholder={editing.name} value={barberForm.nameAr} onChange={(e) => setBarberForm({ ...barberForm, nameAr: e.target.value })} /></div>
                     <div className="field"><label>Photo URL</label><input className="input" value={barberForm.photoUrl} onChange={(e) => setBarberForm({ ...barberForm, photoUrl: e.target.value })} /></div>
                     <div className="field"><label>Bio (English)</label><textarea className="textarea" rows={3} value={barberForm.bio} onChange={(e) => setBarberForm({ ...barberForm, bio: e.target.value })} /></div>

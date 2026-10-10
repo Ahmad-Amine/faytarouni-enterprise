@@ -19,7 +19,7 @@ export default function Barbers() {
       {isLoading && <Spinner />}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 20, marginTop: 24 }}>
         {barbers?.map((b) => (
-          <Link key={b._id} to={`/barbers/${b._id}`} className="card" style={{ textAlign: 'center' }}>
+          <Link key={b._id} to={`/barbers/${b._id}`} className="card" style={{ textAlign: 'start' }}>
             <img src={b.photoUrl} alt={localizedBarberName(b, lang)} style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--accent)', marginBottom: 12 }} />
             <h3>{localizedBarberName(b, lang)}</h3>
             {localizedBarberSpecialties(b, lang).length > 0 && <p style={{ fontSize: 13, color: 'var(--teal)', marginTop: 4 }}>{localizedBarberSpecialties(b, lang).join(' · ')}</p>}

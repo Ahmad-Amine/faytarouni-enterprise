@@ -72,7 +72,7 @@
   },
   "shop": {
     "title": "المتجر",
-    "inStock": "متوفر: {{count}}",
+    "inStock": "متوفر",
     "outOfStock": "غير متوفر"
   },
   "auth": {

@@ -4,11 +4,27 @@ const ApiError = require('../utils/ApiError');
 const { productRepository } = require('../repositories');
 const inventoryService = require('../services/InventoryService');
 
+// Customers only see what they need to shop: stock counts, cost price,
+// supplier and reorder thresholds stay internal (admin endpoints only).
+function toPublicProduct(product) {
+  return {
+    _id: product._id,
+    name: product.name,
+    nameAr: product.nameAr,
+    description: product.description,
+    descriptionAr: product.descriptionAr,
+    imageUrl: product.imageUrl,
+    category: product.category,
+    price: product.price,
+    inStock: product.stock > 0,
+  };
+}
+
 exports.listPublic = catchAsync(async (req, res) => {
   const { items, meta } = await productRepository.paginate({ isActive: true }, req.query, {
-    searchableFields: ['name', 'sku'],
+    searchableFields: ['name'],
   });
-  return new ApiResponse(200, items, 'OK', meta).send(res);
+  return new ApiResponse(200, items.map(toPublicProduct), 'OK', meta).send(res);
 });
 
 exports.list = catchAsync(async (req, res) => {

@@ -72,7 +72,7 @@
   },
   "shop": {
     "title": "Shop",
-    "inStock": "{{count}} in stock",
+    "inStock": "In stock",
     "outOfStock": "Out of stock"
   },
   "auth": {
