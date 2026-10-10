@@ -33,7 +33,7 @@ export default function SplashIntro({ onDone }) {
               </defs>
               <text>
                 <textPath href="#openingCirclePath" startOffset="3%">
-                  {isArabic ? 'فيتاروني • للحلاقة • فيتاروني • للحلاقة •' : 'FAYTAROUNI • BARBERSHOP • FAYTAROUNI • BARBERSHOP •'}
+                  {isArabic ? 'فيتروني • للحلاقة • فيتروني • للحلاقة •' : 'FAYTAROUNI • BARBERSHOP • FAYTAROUNI • BARBERSHOP •'}
                 </textPath>
               </text>
             </svg>
@@ -41,9 +41,9 @@ export default function SplashIntro({ onDone }) {
           <div className="opening-center-disc">{isArabic ? 'ف' : 'FB'}</div>
         </div>
 
-        <p className="opening-eyebrow">{isArabic ? 'فيتاروني' : 'FAYTAROUNI'}</p>
+        <p className="opening-eyebrow">{isArabic ? 'فيتروني' : 'FAYTAROUNI'}</p>
         <h1 className="opening-title">
-          {isArabic ? 'فيتاروني ' : 'Faytarouni '}
+          {isArabic ? 'فيتروني ' : 'Faytarouni '}
           <span>{isArabic ? 'للحلاقة' : 'Barbershop'}</span>
         </h1>
         <p className="opening-tagline">{isArabic ? 'حرفية كلاسيكية. دقة عصرية.' : 'Classic craft. Modern precision.'}</p>
