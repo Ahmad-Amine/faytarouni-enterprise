@@ -20,7 +20,8 @@ export default function Login() {
 
   const onSubmit = async (values) => {
     await login(values);
-    navigate(location.state?.from?.pathname || '/');
+    const from = location.state?.from;
+    navigate(from ? `${from.pathname}${from.search || ''}` : '/');
   };
 
   return (

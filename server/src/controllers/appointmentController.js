@@ -168,7 +168,10 @@ exports.daySlots = catchAsync(async (req, res, next) => {
   const duration = Number(req.query.duration) > 0 ? Number(req.query.duration) : hours.slotIntervalMinutes || 30;
 
   const serviceIds = parseServiceIds(req.query);
-  const allBarbers = await barberRepository.find({ isActive: true });
+  // ?barberId= limits the slots to one barber (booking from a barber's profile).
+  const barberFilter = { isActive: true };
+  if (req.query.barberId && mongoose.Types.ObjectId.isValid(req.query.barberId)) barberFilter._id = req.query.barberId;
+  const allBarbers = await barberRepository.find(barberFilter);
   const workingBarbers = allBarbers.filter(
     (b) => !bookingService.isBarberOnHoliday(b, day) && bookingService.barberOffersServices(b, serviceIds)
   );

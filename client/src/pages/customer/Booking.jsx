@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CalendarMonth from '../../components/CalendarMonth';
 import { Spinner, ErrorBanner } from '../../components/Feedback';
@@ -61,7 +62,36 @@ export default function Booking() {
   });
   const openSet = new Set(openDays?.days || []);
 
-  const { data: services = [] } = useQuery({ queryKey: ['services'], queryFn: () => catalogService.services() });
+  const { data: allServices = [] } = useQuery({ queryKey: ['services'], queryFn: () => catalogService.services() });
+
+  // Booking from a barber's profile (/book?barber=<id>) locks the booking to
+  // that barber and only offers the services the admin assigned to them.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const preselectedBarberId = searchParams.get('barber');
+  const { data: preselectedBarber } = useQuery({
+    queryKey: ['barber', preselectedBarberId],
+    queryFn: () => catalogService.barber(preselectedBarberId),
+    enabled: !!preselectedBarberId,
+  });
+  const services = useMemo(() => {
+    if (!preselectedBarberId) return allServices;
+    if (!preselectedBarber) return [];
+    const offered = new Set((preselectedBarber.services || []).map((s) => s?._id || s));
+    return allServices.filter((s) => offered.has(s._id));
+  }, [allServices, preselectedBarber, preselectedBarberId]);
+
+  const clearPreselectedBarber = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('barber');
+    setSearchParams(next);
+  };
+
+  // Drop any services the newly chosen barber doesn't offer.
+  useEffect(() => {
+    if (!preselectedBarber) return;
+    const offered = new Set((preselectedBarber.services || []).map((s) => s?._id || s));
+    setSelectedServiceIds((prev) => prev.filter((id) => offered.has(id)));
+  }, [preselectedBarber]);
 
   const totalDuration = useMemo(
     () => services.filter((s) => selectedServiceIds.includes(s._id)).reduce((sum, s) => sum + s.durationMinutes, 0),
@@ -73,8 +103,8 @@ export default function Booking() {
   );
 
   const { data: slotsData, isFetching: loadingSlots } = useQuery({
-    queryKey: ['availability', 'day', selectedDate, totalDuration, selectedServiceIds],
-    queryFn: () => bookingService.daySlots(selectedDate, totalDuration, selectedServiceIds),
+    queryKey: ['availability', 'day', selectedDate, totalDuration, selectedServiceIds, preselectedBarberId],
+    queryFn: () => bookingService.daySlots(selectedDate, totalDuration, selectedServiceIds, preselectedBarberId),
     enabled: !!selectedDate && totalDuration > 0,
   });
 
@@ -129,6 +159,14 @@ export default function Booking() {
   return (
     <div className="container" style={{ padding: '50px 24px', maxWidth: 720 }}>
       <h1 style={{ color: 'var(--accent)', fontSize: 32 }}>{pageTitle}</h1>
+      {preselectedBarberId && preselectedBarber && (
+        <p style={{ marginTop: 8, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span>{t('booking.bookingWith', { name: localizedBarberName(preselectedBarber, lang) })}</span>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={clearPreselectedBarber}>
+            {t('booking.anyBarber')}
+          </button>
+        </p>
+      )}
 
       <AnimatePresence mode="wait">
         {step === STEPS.DATE && (
@@ -153,6 +191,12 @@ export default function Booking() {
           <motion.div key="services" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ marginTop: 24 }}>
             <button type="button" className="btn btn-ghost" onClick={() => setStep(STEPS.DATE)}>← {t('booking.back')}</button>
             <p style={{ fontWeight: 600, margin: '16px 0 8px' }}>{t('booking.services')}</p>
+            {preselectedBarber && services.length === 0 && (
+              <p style={{ color: 'var(--brown-soft)' }}>
+                {t('booking.barberNoServices')}{' '}
+                <Link to="/barbers" style={{ color: 'var(--accent)' }}>{t('nav.barbers')}</Link>
+              </p>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 8 }}>
               {services.map((s) => (
                 <label
@@ -214,7 +258,7 @@ export default function Booking() {
             <button type="button" className="btn btn-ghost" onClick={() => setStep(STEPS.TIME)}>← {t('booking.back')}</button>
             {loadingBarbers && <Spinner />}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))', gap: 14, marginTop: 12 }}>
-              {barbersData?.map((b) => {
+              {barbersData?.filter((b) => !preselectedBarberId || b._id === preselectedBarberId).map((b) => {
                 const unavailable = b.isBooked || b.isOnHoliday || b.isOnBreak;
                 return (
                   <button

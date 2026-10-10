@@ -3,13 +3,17 @@ const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const { barberRepository, appointmentRepository } = require('../repositories');
 
+// Public pages only show the services the admin assigned to the barber that
+// are still active; inactive services drop out of the populated list.
+const PUBLIC_SERVICES_POPULATE = { path: 'services', match: { isActive: true } };
+
 exports.listPublic = catchAsync(async (req, res) => {
-  const barbers = await barberRepository.find({ isActive: true }, { sort: { order: 1 }, populate: 'services' });
+  const barbers = await barberRepository.find({ isActive: true }, { sort: { order: 1 }, populate: PUBLIC_SERVICES_POPULATE });
   return new ApiResponse(200, barbers).send(res);
 });
 
 exports.getPublicProfile = catchAsync(async (req, res, next) => {
-  const barber = await barberRepository.findOne({ _id: req.params.id, isActive: true }, { populate: 'services' });
+  const barber = await barberRepository.findOne({ _id: req.params.id, isActive: true }, { populate: PUBLIC_SERVICES_POPULATE });
   if (!barber) return next(ApiError.notFound('Barber not found.'));
   return new ApiResponse(200, barber).send(res);
 });

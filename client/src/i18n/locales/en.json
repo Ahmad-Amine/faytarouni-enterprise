@@ -54,6 +54,9 @@
     "countryCodeLocked": "Country code is locked to the one saved on your account.",
     "loginRequired": "Sign in or create an account to book.",
     "onBreak": "On break",
+    "bookingWith": "Booking with {{name}}",
+    "anyBarber": "Choose any barber instead",
+    "barberNoServices": "This barber has no services available for online booking right now. Try another barber:",
     "pendingApprovalTitle": "Your account is waiting for approval",
     "pendingApprovalBody": "Thanks for signing up! The shop needs to approve your account before you can book online. You'll get a notification as soon as it's approved.",
     "rejectedTitle": "Online booking isn't available for this account",
@@ -62,6 +65,8 @@
   "barbersPage": {
     "title": "Meet the Barbers",
     "bookWith": "Book with {{name}}",
+    "services": "Services",
+    "noServices": "No services listed yet.",
     "reviews": "Reviews",
     "noReviews": "No reviews yet."
   },

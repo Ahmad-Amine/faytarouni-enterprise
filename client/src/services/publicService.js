@@ -12,8 +12,10 @@ export const catalogService = {
 
 export const bookingService = {
   monthAvailability: (month) => api.get('/availability', { params: { month } }).then((r) => r.data.data),
-  daySlots: (date, duration, serviceIds = []) =>
-    api.get(`/availability/${date}`, { params: { duration, serviceIds: serviceIds.join(',') } }).then((r) => r.data.data),
+  daySlots: (date, duration, serviceIds = [], barberId) =>
+    api
+      .get(`/availability/${date}`, { params: { duration, serviceIds: serviceIds.join(','), barberId: barberId || undefined } })
+      .then((r) => r.data.data),
   availableBarbers: (date, time, duration, serviceIds = []) =>
     api
       .get(`/availability/${date}/${time}/barbers`, { params: { duration, serviceIds: serviceIds.join(',') } })
