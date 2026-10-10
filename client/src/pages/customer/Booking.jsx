@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import CalendarMonth from '../../components/CalendarMonth';
@@ -8,7 +8,8 @@ import { bookingService, catalogService } from '../../services/publicService';
 import { useAuth } from '../../hooks/useAuth';
 import { useSiteSettings, useContentText } from '../../hooks/useSiteSettings';
 import { COUNTRY_CODES, DEFAULT_COUNTRY_DIAL } from '../../data/countryCodes';
-import { countryName, localizedServiceName } from '../../utils/localizeCatalog';
+import { countryName, localizedBarberName, localizedServiceName } from '../../utils/localizeCatalog';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 const STEPS = { DATE: 1, SERVICES: 2, TIME: 3, BARBER: 4, DETAILS: 5 };
 
@@ -18,6 +19,7 @@ export default function Booking() {
   const { data: settings } = useSiteSettings();
   const pageTitle = useContentText(settings, 'booking_page_title', t('booking.title'), lang);
   const { user } = useAuth();
+  const formatTime = useTimeFormat();
   const [step, setStep] = useState(STEPS.DATE);
   const [monthDate, setMonthDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -35,6 +37,14 @@ export default function Booking() {
   const [customerPhoneLocal, setCustomerPhoneLocal] = useState(initialPhone.local);
   const [couponCode, setCouponCode] = useState('');
   const [success, setSuccess] = useState(false);
+  const queryClient = useQueryClient();
+  const approvalStatus = user?.approvalStatus || 'approved';
+
+  // A pending customer may have been approved since the session was loaded;
+  // refresh the account so the booking form unlocks without a re-login.
+  useEffect(() => {
+    if (approvalStatus !== 'approved') queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+  }, [approvalStatus, queryClient]);
 
   useEffect(() => {
     const parsed = splitAccountPhone(user?.phone || '');
@@ -94,6 +104,18 @@ export default function Booking() {
       couponCode: couponCode || undefined,
     });
   };
+
+  if (approvalStatus !== 'approved') {
+    const rejected = approvalStatus === 'rejected';
+    return (
+      <div className="container" style={{ padding: '100px 24px', textAlign: 'center', maxWidth: 620 }}>
+        <h1 style={{ color: 'var(--accent)', fontSize: 30 }}>
+          {rejected ? t('booking.rejectedTitle') : t('booking.pendingApprovalTitle')}
+        </h1>
+        <p style={{ marginTop: 12 }}>{rejected ? t('booking.rejectedBody') : t('booking.pendingApprovalBody')}</p>
+      </div>
+    );
+  }
 
   if (success) {
     return (
@@ -180,7 +202,7 @@ export default function Booking() {
                     setStep(STEPS.BARBER);
                   }}
                 >
-                  {s.time}
+                  {formatTime(s.time)}
                 </button>
               ))}
             </div>
@@ -193,7 +215,7 @@ export default function Booking() {
             {loadingBarbers && <Spinner />}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))', gap: 14, marginTop: 12 }}>
               {barbersData?.map((b) => {
-                const unavailable = b.isBooked || b.isOnHoliday;
+                const unavailable = b.isBooked || b.isOnHoliday || b.isOnBreak;
                 return (
                   <button
                     key={b._id}
@@ -206,10 +228,11 @@ export default function Booking() {
                       setStep(STEPS.DETAILS);
                     }}
                   >
-                    <img src={b.photoUrl} alt={b.name} style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover', marginBottom: 8 }} />
-                    <p style={{ fontWeight: 600, fontSize: 14 }}>{b.name}</p>
+                    <img src={b.photoUrl} alt={localizedBarberName(b, lang)} style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover', marginBottom: 8 }} />
+                    <p style={{ fontWeight: 600, fontSize: 14 }}>{localizedBarberName(b, lang)}</p>
                     {b.isBooked && <p style={{ fontSize: 11, color: 'var(--danger)' }}>{t('booking.booked')}</p>}
                     {!b.isBooked && b.isOnHoliday && <p style={{ fontSize: 11, color: 'var(--danger)' }}>{t('booking.onHoliday')}</p>}
+                    {!b.isBooked && !b.isOnHoliday && b.isOnBreak && <p style={{ fontSize: 11, color: 'var(--danger)' }}>{t('booking.onBreak')}</p>}
                   </button>
                 );
               })}
@@ -222,7 +245,7 @@ export default function Booking() {
             <button type="button" className="btn btn-ghost" onClick={() => setStep(STEPS.BARBER)}>← {t('booking.back')}</button>
 
             <p style={{ margin: '16px 0 8px' }}>
-              {selectedDate} · {selectedTime} · {selectedBarber?.name}
+              {selectedDate} · {formatTime(selectedTime)} · {localizedBarberName(selectedBarber, lang)}
             </p>
             <p style={{ textAlign: 'right' }}>{t('booking.total')}: <strong style={{ color: 'var(--accent)' }}>${total.toFixed(2)}</strong></p>
 

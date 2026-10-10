@@ -169,8 +169,9 @@ exports.daySlots = catchAsync(async (req, res, next) => {
     })
   );
 
-  const isBarberFreeFor = (barberId, startMins, endMins) =>
-    !overlapsAny(busyByBarber.get(barberId.toString()) || [], startMins, endMins);
+  const isBarberFreeFor = (barber, startMins, endMins) =>
+    !bookingService.isBarberOnBreak(barber, day, startMins, endMins) &&
+    !overlapsAny(busyByBarber.get(barber._id.toString()) || [], startMins, endMins);
 
   const slots = [];
   let cursor = bookingService.timeToMinutes(hours.openTime);
@@ -184,7 +185,7 @@ exports.daySlots = catchAsync(async (req, res, next) => {
       (b) => cursor < bookingService.timeToMinutes(b.end) && bookingService.timeToMinutes(b.start) < slotEnd
     );
     if (fitsBeforeClose && !inBreak && !bookingService.isPastSlot(req.params.date, time)) {
-      const freeBarbers = workingBarbers.filter((b) => isBarberFreeFor(b._id, cursor, slotEnd));
+      const freeBarbers = workingBarbers.filter((b) => isBarberFreeFor(b, cursor, slotEnd));
       slots.push({ time, isFullyBooked: workingBarbers.length > 0 && freeBarbers.length === 0 });
     }
     cursor += hours.slotIntervalMinutes || 30;
@@ -208,18 +209,22 @@ exports.availableBarbers = catchAsync(async (req, res, next) => {
   const barbers = await Promise.all(
     allBarbers.map(async (b) => {
       const onHoliday = bookingService.isBarberOnHoliday(b, day);
+      const onBreak = !onHoliday && bookingService.isBarberOnBreak(b, day, timeMins, endMins);
       let isBooked = false;
-      if (!onHoliday) {
+      if (!onHoliday && !onBreak) {
         const appts = await appointmentRepository.findForBarberDay(b._id, day);
         isBooked = overlapsAny(appts, timeMins, endMins);
       }
       return {
         _id: b._id,
         name: b.name,
+        nameAr: b.nameAr,
         photoUrl: b.photoUrl,
         bio: b.bio,
+        bioAr: b.bioAr,
         isBooked,
         isOnHoliday: onHoliday,
+        isOnBreak: onBreak,
       };
     })
   );

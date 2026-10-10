@@ -54,7 +54,14 @@ const updatePasswordSchema = z.object({
   }),
 });
 
+const customerApprovalSchema = z.object({
+  body: z.object({
+    status: z.enum(['pending', 'approved', 'rejected']),
+  }),
+});
+
 module.exports = {
+  customerApprovalSchema,
   registerSchema,
   loginSchema,
   forgotPasswordSchema,

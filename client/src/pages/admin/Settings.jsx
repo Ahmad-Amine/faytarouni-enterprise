@@ -29,7 +29,10 @@ export default function Settings() {
 
   const rulesMutation = useMutation({
     mutationFn: adminSettingsService.updateRules,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
+      queryClient.invalidateQueries({ queryKey: ['settings', 'public'] });
+    },
   });
   const textMutation = useMutation({
     mutationFn: adminSettingsService.updateText,
@@ -52,6 +55,7 @@ export default function Settings() {
     businessName: settings.businessName,
     logoUrl: settings.logoUrl,
     currency: settings.currency,
+    timeFormat: settings.timeFormat || '24h',
     loyaltyAppointmentThreshold: settings.loyaltyAppointmentThreshold,
     whatsappAdminNumber: settings.whatsappAdminNumber,
   };
@@ -89,6 +93,14 @@ export default function Settings() {
                 <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 4 }}>Leave blank to show the business name as text instead.</p>
               </div>
               <div className="field"><label>Currency</label><input className="input" value={r.currency} onChange={(e) => setRules({ ...r, currency: e.target.value })} /></div>
+              <div className="field">
+                <label>Time format</label>
+                <select className="select" value={r.timeFormat} onChange={(e) => setRules({ ...r, timeFormat: e.target.value })}>
+                  <option value="24h">24-hour (15:00)</option>
+                  <option value="12h">12-hour (3:00 PM)</option>
+                </select>
+                <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 4 }}>How appointment times are shown on the site, in the dashboard, and in emails.</p>
+              </div>
               <div className="field"><label>Loyalty threshold (appointments)</label><input className="input" type="number" value={r.loyaltyAppointmentThreshold} onChange={(e) => setRules({ ...r, loyaltyAppointmentThreshold: Number(e.target.value) })} /></div>
               <div className="field"><label>Admin WhatsApp number</label><input className="input" value={r.whatsappAdminNumber} onChange={(e) => setRules({ ...r, whatsappAdminNumber: e.target.value })} /></div>
               <button type="submit" className="btn btn-primary btn-block" disabled={rulesMutation.isPending}>Save</button>

@@ -46,7 +46,7 @@ export function useAuth() {
     mutationFn: authService.register,
     onSuccess: (data) => {
       dispatch(setUser(data.user));
-      dispatch(pushToast('Account created. Check your email to verify.'));
+      dispatch(pushToast('Account created. The shop will approve it before you can book online.'));
     },
   });
 

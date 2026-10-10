@@ -5,7 +5,7 @@ import { adminInventoryService, adminProductSaleService } from '../../services/a
 import Modal from '../../components/Modal';
 import { Spinner, ErrorBanner } from '../../components/Feedback';
 
-const empty = { name: '', sku: '', description: '', imageUrl: '', category: 'general', price: '', cost: '', stock: '', lowStockThreshold: 5, supplier: '', isActive: true };
+const empty = { name: '', nameAr: '', sku: '', description: '', descriptionAr: '', imageUrl: '', category: 'general', price: '', cost: '', stock: '', lowStockThreshold: 5, supplier: '', isActive: true };
 const emptySale = { quantity: 1, customerName: '', customerPhone: '' };
 
 export default function Products() {
@@ -103,10 +103,12 @@ export default function Products() {
       <Modal open={!!editing} onClose={() => setEditing(null)} title={editing?._id ? 'Edit Product' : 'Add Product'}>
         <form onSubmit={submit}>
           <ErrorBanner message={error} />
-          <div className="field"><label>Name</label><input className="input" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+          <div className="field"><label>Name (English)</label><input className="input" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+          <div className="field"><label>الاسم (Arabic name)</label><input className="input" dir="rtl" lang="ar" value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} /></div>
           <div className="field"><label>SKU</label><input className="input" required value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
           <div className="field"><label>Image URL</label><input className="input" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} /></div>
-          <div className="field"><label>Description</label><textarea className="textarea" rows={3} placeholder="Shown to customers in the shop" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+          <div className="field"><label>Description (English)</label><textarea className="textarea" rows={3} placeholder="Shown to customers in the shop" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+          <div className="field"><label>الوصف (Arabic description)</label><textarea className="textarea" rows={3} dir="rtl" lang="ar" placeholder="يظهر للزبائن في المتجر عند اختيار العربية" value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} /></div>
           <div className="grid-stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div className="field"><label>Price</label><input className="input" type="number" step="0.01" required value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
             <div className="field"><label>Cost</label><input className="input" type="number" step="0.01" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} /></div>

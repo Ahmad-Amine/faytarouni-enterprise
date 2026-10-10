@@ -157,6 +157,8 @@ export default function AdminCrudPage({ title, queryKey, service, columns, field
                 <textarea
                   className="textarea"
                   rows={3}
+                  dir={f.dir}
+                  lang={f.dir === 'rtl' ? 'ar' : undefined}
                   value={form[f.name] ?? ''}
                   required={f.required}
                   onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}
@@ -188,6 +190,8 @@ export default function AdminCrudPage({ title, queryKey, service, columns, field
                 <input
                   className="input"
                   type={f.type || 'text'}
+                  dir={f.dir}
+                  lang={f.dir === 'rtl' ? 'ar' : undefined}
                   value={form[f.name] ?? ''}
                   required={f.required}
                   onChange={(e) => setForm({ ...form, [f.name]: e.target.value })}

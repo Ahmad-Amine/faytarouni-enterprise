@@ -7,6 +7,7 @@ import { useSiteSettings, useContentText } from "../../hooks/useSiteSettings";
 import { Spinner } from "../../components/Feedback";
 import {
   localizedBarberBio,
+  localizedBarberName,
   localizedServiceDescription,
   localizedServiceName,
 } from "../../utils/localizeCatalog";
@@ -167,7 +168,7 @@ export default function Home() {
                 >
                   <div className="emerald-barber-photo">
                     {barber.photoUrl ? (
-                      <img src={barber.photoUrl} alt={barber.name} />
+                      <img src={barber.photoUrl} alt={localizedBarberName(barber, lang)} />
                     ) : (
                       <span>✂</span>
                     )}
@@ -175,7 +176,7 @@ export default function Home() {
                   <small>
                     ★ {Number(barber?.stats?.averageRating || 5).toFixed(1)}
                   </small>
-                  <h3>{barber.name}</h3>
+                  <h3>{localizedBarberName(barber, lang)}</h3>
                   <p>
                     {localizedBarberBio(barber, lang) ||
                       t("home.barberFallback")}

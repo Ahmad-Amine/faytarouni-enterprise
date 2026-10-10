@@ -13,14 +13,17 @@ export default function Services() {
       service={serviceAdminService}
       columns={[
         { key: 'name', label: 'Name' },
+        { key: 'nameAr', label: 'Arabic name', render: (r) => <span dir="rtl">{r.nameAr || '—'}</span> },
         { key: 'price', label: 'Price', render: (r) => `$${r.price.toFixed(2)}` },
         { key: 'durationMinutes', label: 'Duration', render: (r) => `${r.durationMinutes} min` },
         { key: 'isActive', label: 'Active', render: (r) => (r.isActive ? 'Yes' : 'No') },
       ]}
       fields={[
-        { name: 'name', label: 'Name', required: true },
+        { name: 'name', label: 'Name (English)', required: true },
+        { name: 'nameAr', label: 'الاسم (Arabic name)', dir: 'rtl' },
         { name: 'category', label: 'Category', type: 'select', options: categoryOptions },
-        { name: 'description', label: 'Description', type: 'textarea' },
+        { name: 'description', label: 'Description (English)', type: 'textarea' },
+        { name: 'descriptionAr', label: 'الوصف (Arabic description)', type: 'textarea', dir: 'rtl' },
         { name: 'imageUrl', label: 'Image URL' },
         { name: 'price', label: 'Price', type: 'number', required: true },
         { name: 'durationMinutes', label: 'Duration (minutes)', type: 'number', required: true },

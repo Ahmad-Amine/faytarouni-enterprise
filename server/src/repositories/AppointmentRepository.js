@@ -2,6 +2,8 @@ const BaseRepository = require('./BaseRepository');
 const Appointment = require('../models/Appointment');
 const { APPOINTMENT_STATUS } = require('../config/constants');
 
+const PERIOD_FORMATS = { day: '%Y-%m-%d', month: '%Y-%m', year: '%Y' };
+
 const ACTIVE_STATUSES = [APPOINTMENT_STATUS.PENDING, APPOINTMENT_STATUS.CONFIRMED];
 
 class AppointmentRepository extends BaseRepository {
@@ -77,11 +79,18 @@ class AppointmentRepository extends BaseRepository {
   }
 
   revenueByMonth(start) {
+    return this.revenueByPeriod(start, 'month');
+  }
+
+  // period: 'day' | 'month' | 'year'. Appointment dates are stored as UTC
+  // midnight, so grouping in UTC keeps each appointment on its booked day.
+  revenueByPeriod(start, period = 'month', end = null) {
+    const date = end ? { $gte: start, $lt: end } : { $gte: start };
     return this.model.aggregate([
-      { $match: { isPaid: true, date: { $gte: start } } },
+      { $match: { isPaid: true, date } },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
+          _id: { $dateToString: { format: PERIOD_FORMATS[period] || PERIOD_FORMATS.month, date: '$date' } },
           total: { $sum: '$total' },
           count: { $sum: 1 },
         },

@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const serviceSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
+    nameAr: { type: String, default: '', trim: true },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
     description: { type: String, default: '' },
+    descriptionAr: { type: String, default: '' },
     imageUrl: { type: String, default: '' },
     price: { type: Number, required: true, min: 0 },
     durationMinutes: { type: Number, required: true, min: 5, default: 30 },

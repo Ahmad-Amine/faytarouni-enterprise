@@ -38,13 +38,4 @@ const authLimiter = rateLimit({
   message: { success: false, message: 'Too many attempts. Please try again later.' },
 });
 
-const guestCodeLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 8,
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => !req.body?.guestCode,
-  message: { success: false, message: 'Too many booking-code attempts. Please try again later.' },
-});
-
-module.exports = { applySecurity, globalLimiter, authLimiter, guestCodeLimiter };
+module.exports = { applySecurity, globalLimiter, authLimiter };

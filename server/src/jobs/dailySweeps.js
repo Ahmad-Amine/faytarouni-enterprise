@@ -4,6 +4,7 @@ const { appointmentRepository } = require('../repositories');
 const emailService = require('./../services/EmailService');
 const defaultTemplates = require('../emails/defaultTemplates');
 const logger = require('../utils/logger');
+const { formatTime, getTimeFormat } = require('../utils/timeFormat');
 
 async function runLowStockSweep() {
   const lowStock = await inventoryService.getLowStockProducts();
@@ -22,6 +23,7 @@ async function runAppointmentReminders() {
   const tomorrow = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + 1));
 
   const appointments = await appointmentRepository.findForDay(tomorrow, { status: 'confirmed' });
+  const timeFormat = appointments.length ? await getTimeFormat() : '24h';
   for (const appt of appointments) {
     if (!appt.customer?.email) continue;
     await emailService
@@ -31,7 +33,7 @@ async function runAppointmentReminders() {
         {
           name: appt.customerName,
           date: appt.date.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }),
-          startTime: appt.startTime,
+          startTime: formatTime(appt.startTime, timeFormat),
           barberName: appt.barber?.name || '',
         },
         defaultTemplates.appointmentStatusChanged

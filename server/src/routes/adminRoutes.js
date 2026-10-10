@@ -23,6 +23,7 @@ const backupController = require('../controllers/backupController');
 const reportController = require('../controllers/reportController');
 const reviewController = require('../controllers/reviewController');
 
+const { customerApprovalSchema } = require('../validators/authValidators');
 const { walkInSchema, statusChangeSchema, paymentStatusSchema } = require('../validators/appointmentValidators');
 const { categorySchema, serviceSchema, barberSchema } = require('../validators/catalogValidators');
 const { productSchema, supplierSchema, purchaseOrderSchema, productSaleSchema } = require('../validators/inventoryValidators');
@@ -45,6 +46,7 @@ const P = PERMISSIONS;
 
 router.get('/dashboard', authorize(P.REPORTS_VIEW), reportController.dashboard);
 router.get('/reports/revenue', authorize(P.REPORTS_VIEW), reportController.revenue);
+router.get('/reports/revenue-summary', authorize(P.REPORTS_VIEW), reportController.revenueSummary);
 router.get('/reports/product-revenue', authorize(P.REPORTS_VIEW), reportController.productRevenue);
 router.get('/reports/total-revenue', authorize(P.REPORTS_VIEW), reportController.totalRevenue);
 router.get('/reports/inventory', authorize(P.REPORTS_VIEW), reportController.inventoryOverview);
@@ -90,6 +92,12 @@ router.delete('/schedule/holidays/:id', authorize(P.SCHEDULE_MANAGE), scheduleCo
 router.get('/customers', authorize(P.CUSTOMERS_VIEW), userController.list);
 router.get('/customers/:id', authorize(P.CUSTOMERS_VIEW), userController.getOne);
 router.patch('/customers/:id/active', authorize(P.CUSTOMERS_MANAGE), userController.setActive);
+router.patch(
+  '/customers/:id/approval',
+  authorize(P.CUSTOMERS_MANAGE),
+  validate(customerApprovalSchema),
+  userController.setApproval
+);
 router.patch('/customers/:id/password', authorize(P.CUSTOMERS_MANAGE), userController.setPassword);
 
 router.get('/users/search', authorize(P.STAFF_MANAGE), userController.searchAny);

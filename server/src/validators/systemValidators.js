@@ -49,6 +49,7 @@ const settingsRulesSchema = z.object({
     logoUrl: httpsUrlOrEmpty.optional(),
     currency: z.string().optional(),
     timezone: z.string().optional(),
+    timeFormat: z.enum(['12h', '24h']).optional(),
     loyaltyAppointmentThreshold: z.number().min(1).optional(),
     whatsappAdminNumber: z.string().optional(),
     primaryColor: z.string().optional(),

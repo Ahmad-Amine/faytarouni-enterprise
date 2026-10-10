@@ -4,6 +4,8 @@ const ApiError = require('../utils/ApiError');
 const { userRepository, appointmentRepository, roleRepository } = require('../repositories');
 const authService = require('../services/AuthService');
 const { disconnectUserSockets } = require('../socket');
+const auditService = require('../services/AuditService');
+const notificationService = require('../services/NotificationService');
 
 /**
  * SECURITY: every handler below that touches an arbitrary :id must confirm
@@ -26,9 +28,13 @@ async function assertIsCustomer(userId) {
   return user;
 }
 
+const APPROVAL_STATUSES = ['pending', 'approved', 'rejected'];
+
 exports.list = catchAsync(async (req, res) => {
   const customerRoleId = await getCustomerRoleId();
-  const { items, meta } = await userRepository.paginate({ role: customerRoleId }, req.query, {
+  const filter = { role: customerRoleId };
+  if (APPROVAL_STATUSES.includes(req.query.approval)) filter.approvalStatus = req.query.approval;
+  const { items, meta } = await userRepository.paginate(filter, req.query, {
     searchableFields: ['name', 'email', 'phone'],
     populate: 'role',
   });
@@ -52,6 +58,41 @@ exports.setActive = catchAsync(async (req, res, next) => {
     disconnectUserSockets(user._id);
   }
   return new ApiResponse(200, user.toSafeObject()).send(res);
+});
+
+exports.setApproval = catchAsync(async (req, res, next) => {
+  const target = await assertIsCustomer(req.params.id);
+  if (!target) return next(ApiError.notFound('Customer not found.'));
+
+  const { status } = req.body;
+  const user = await userRepository.updateById(req.params.id, {
+    approvalStatus: status,
+    approvedAt: status === 'approved' ? new Date() : null,
+    approvedBy: status === 'approved' ? req.user._id : null,
+  });
+
+  await auditService.log(req, {
+    actor: req.user,
+    action: 'customer.approval_changed',
+    entityType: 'User',
+    entityId: user._id,
+    changes: { from: target.approvalStatus, to: status },
+  });
+
+  if (target.approvalStatus !== status && status !== 'pending') {
+    await notificationService
+      .notifyCustomer(
+        user._id,
+        'account_approval',
+        status === 'approved'
+          ? 'Your account has been approved. You can now book online.'
+          : 'Your account was not approved for online booking. Please contact the shop.',
+        status === 'approved' ? '/book' : ''
+      )
+      .catch(() => {});
+  }
+
+  return new ApiResponse(200, user.toSafeObject(), 'Approval updated.').send(res);
 });
 
 exports.setPassword = catchAsync(async (req, res, next) => {

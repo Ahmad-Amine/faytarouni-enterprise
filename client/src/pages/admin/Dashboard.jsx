@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { adminReportService } from '../../services/adminService';
 import { Spinner } from '../../components/Feedback';
+import RevenueSummary from '../../components/RevenueSummary';
 
 const PIE_COLORS = ['#e0a527', '#2e7060', '#8a8a8a', '#a3261e', '#c1531b', '#4a2e1e'];
 
@@ -9,15 +10,15 @@ export default function Dashboard() {
   const { data, isLoading } = useQuery({ queryKey: ['admin', 'dashboard'], queryFn: adminReportService.dashboard });
   const { data: servicesRevenue, isLoading: loadingServicesRevenue } = useQuery({
     queryKey: ['admin', 'reports', 'revenue', 12],
-    queryFn: () => adminReportService.revenue(12),
+    queryFn: () => adminReportService.revenue('month', 12),
   });
   const { data: productsRevenue, isLoading: loadingProductsRevenue } = useQuery({
     queryKey: ['admin', 'reports', 'product-revenue', 12],
-    queryFn: () => adminReportService.productRevenue(12),
+    queryFn: () => adminReportService.productRevenue('month', 12),
   });
   const { data: totalRevenue, isLoading: loadingTotalRevenue } = useQuery({
     queryKey: ['admin', 'reports', 'total-revenue', 12],
-    queryFn: () => adminReportService.totalRevenue(12),
+    queryFn: () => adminReportService.totalRevenue('month', 12),
   });
 
   if (isLoading || !data) return <Spinner />;
@@ -39,6 +40,10 @@ export default function Dashboard() {
         <div className="kpi-card"><div className="label">Services Revenue</div><div className="value">${data.totalServicesRevenue.toFixed(2)}</div></div>
         <div className="kpi-card"><div className="label">Products Revenue</div><div className="value">${data.totalProductsRevenue.toFixed(2)}</div></div>
         <div className="kpi-card"><div className="label">Grand Total</div><div className="value">${data.grandTotal.toFixed(2)}</div></div>
+      </div>
+
+      <div style={{ margin: '12px 0 20px' }}>
+        <RevenueSummary />
       </div>
 
       <div className="grid-stack-mobile" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>

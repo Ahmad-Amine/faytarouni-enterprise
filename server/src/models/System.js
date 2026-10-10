@@ -7,6 +7,7 @@ const settingsSchema = new mongoose.Schema(
     logoUrl: { type: String, default: '' },
     currency: { type: String, default: 'USD' },
     timezone: { type: String, default: 'UTC' },
+    timeFormat: { type: String, enum: ['12h', '24h'], default: '24h' },
     loyaltyAppointmentThreshold: { type: Number, default: 10 },
     whatsappAdminNumber: { type: String, default: '' },
     contacts: {
@@ -65,6 +66,8 @@ const notificationSchema = new mongoose.Schema(
         'birthday',
         'low_stock',
         'new_review',
+        'new_registration',
+        'account_approval',
       ],
       required: true,
     },

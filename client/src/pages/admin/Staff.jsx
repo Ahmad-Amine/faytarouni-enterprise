@@ -5,11 +5,27 @@ import { roleService, barberAdminService } from '../../services/resourceService'
 import { catalogService } from '../../services/publicService';
 import Modal from '../../components/Modal';
 import { Spinner, ErrorBanner } from '../../components/Feedback';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
-const emptyBarberForm = { photoUrl: '', bio: '', specialties: '', serviceIds: [], isActive: true, holidays: [] };
+const emptyBarberForm = {
+  nameAr: '',
+  photoUrl: '',
+  bio: '',
+  bioAr: '',
+  specialties: '',
+  specialtiesAr: '',
+  serviceIds: [],
+  isActive: true,
+  holidays: [],
+  breaks: [],
+};
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const emptyBreakDraft = { dayOfWeek: '', start: '13:00', end: '14:00' };
+const splitList = (value) => value.split(/[,،]/).map((s) => s.trim()).filter(Boolean);
 
 export default function Staff() {
   const queryClient = useQueryClient();
+  const formatTime = useTimeFormat();
   const { data, isLoading } = useQuery({ queryKey: ['admin', 'staff'], queryFn: () => adminStaffService.list({ limit: 100 }) });
   const { data: roles } = useQuery({ queryKey: ['admin', 'roles'], queryFn: () => roleService.list() });
   const { data: services = [] } = useQuery({ queryKey: ['services'], queryFn: () => catalogService.services() });
@@ -60,6 +76,7 @@ export default function Staff() {
   const [barberChecked, setBarberChecked] = useState(false);
   const [barberLoading, setBarberLoading] = useState(false);
   const [newHoliday, setNewHoliday] = useState('');
+  const [breakDraft, setBreakDraft] = useState(emptyBreakDraft);
   const [error, setError] = useState('');
 
   const editRole = roleList.find((r) => r._id === editRoleId);
@@ -71,6 +88,7 @@ export default function Staff() {
     setBarberForm(emptyBarberForm);
     setBarberId(null);
     setBarberChecked(false);
+    setBreakDraft(emptyBreakDraft);
     setError('');
   };
 
@@ -84,12 +102,16 @@ export default function Staff() {
         if (cancelled || !b) return;
         setBarberId(b._id);
         setBarberForm({
+          nameAr: b.nameAr || '',
           photoUrl: b.photoUrl || '',
           bio: b.bio || '',
+          bioAr: b.bioAr || '',
           specialties: (b.specialties || []).join(', '),
+          specialtiesAr: (b.specialtiesAr || []).join('، '),
           serviceIds: (b.services || []).map((sv) => sv._id || sv),
           isActive: b.isActive,
           holidays: (b.holidays || []).map((d) => new Date(d).toISOString().slice(0, 10)),
+          breaks: (b.breaks || []).map((br) => ({ dayOfWeek: br.dayOfWeek ?? null, start: br.start, end: br.end })),
         });
       })
       .finally(() => {
@@ -112,6 +134,27 @@ export default function Staff() {
   };
   const removeHoliday = (d) => setBarberForm((f) => ({ ...f, holidays: f.holidays.filter((h) => h !== d) }));
 
+  const addBreak = () => {
+    if (!breakDraft.start || !breakDraft.end) return;
+    if (breakDraft.start >= breakDraft.end) {
+      setError('Break end time must be after its start time.');
+      return;
+    }
+    const entry = {
+      dayOfWeek: breakDraft.dayOfWeek === '' ? null : Number(breakDraft.dayOfWeek),
+      start: breakDraft.start,
+      end: breakDraft.end,
+    };
+    setError('');
+    setBarberForm((f) => ({
+      ...f,
+      breaks: [...f.breaks, entry].sort(
+        (a, b) => (a.dayOfWeek ?? -1) - (b.dayOfWeek ?? -1) || a.start.localeCompare(b.start)
+      ),
+    }));
+  };
+  const removeBreak = (index) => setBarberForm((f) => ({ ...f, breaks: f.breaks.filter((_, i) => i !== index) }));
+
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (editRoleId && editRoleId !== editing.role?._id) {
@@ -121,12 +164,16 @@ export default function Staff() {
         const payload = {
           name: editing.name,
           user: editing._id,
+          nameAr: barberForm.nameAr,
           photoUrl: barberForm.photoUrl,
           bio: barberForm.bio,
-          specialties: barberForm.specialties.split(',').map((s) => s.trim()).filter(Boolean),
+          bioAr: barberForm.bioAr,
+          specialties: splitList(barberForm.specialties),
+          specialtiesAr: splitList(barberForm.specialtiesAr),
           services: barberForm.serviceIds,
           isActive: barberForm.isActive,
           holidays: barberForm.holidays,
+          breaks: barberForm.breaks,
         };
         if (barberId) await barberAdminService.update(barberId, payload);
         else await barberAdminService.create(payload);
@@ -228,9 +275,12 @@ export default function Staff() {
                 </p>
                 {barberLoading ? <Spinner /> : (
                   <>
+                    <div className="field"><label>الاسم (Arabic name)</label><input className="input" dir="rtl" lang="ar" placeholder={editing.name} value={barberForm.nameAr} onChange={(e) => setBarberForm({ ...barberForm, nameAr: e.target.value })} /></div>
                     <div className="field"><label>Photo URL</label><input className="input" value={barberForm.photoUrl} onChange={(e) => setBarberForm({ ...barberForm, photoUrl: e.target.value })} /></div>
-                    <div className="field"><label>Bio</label><textarea className="textarea" rows={3} value={barberForm.bio} onChange={(e) => setBarberForm({ ...barberForm, bio: e.target.value })} /></div>
-                    <div className="field"><label>Specialties (comma separated)</label><input className="input" value={barberForm.specialties} onChange={(e) => setBarberForm({ ...barberForm, specialties: e.target.value })} /></div>
+                    <div className="field"><label>Bio (English)</label><textarea className="textarea" rows={3} value={barberForm.bio} onChange={(e) => setBarberForm({ ...barberForm, bio: e.target.value })} /></div>
+                    <div className="field"><label>نبذة (Arabic bio)</label><textarea className="textarea" rows={3} dir="rtl" lang="ar" value={barberForm.bioAr} onChange={(e) => setBarberForm({ ...barberForm, bioAr: e.target.value })} /></div>
+                    <div className="field"><label>Specialties (English, comma separated)</label><input className="input" value={barberForm.specialties} onChange={(e) => setBarberForm({ ...barberForm, specialties: e.target.value })} /></div>
+                    <div className="field"><label>التخصصات (Arabic specialties, comma separated)</label><input className="input" dir="rtl" lang="ar" value={barberForm.specialtiesAr} onChange={(e) => setBarberForm({ ...barberForm, specialtiesAr: e.target.value })} /></div>
                     <div className="field">
                       <label>Services performed</label>
                       {services.map((s) => (
@@ -252,6 +302,34 @@ export default function Staff() {
                             <span key={d} className="badge badge-pending" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               {d}
                               <button type="button" onClick={() => removeHoliday(d)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, color: 'var(--danger)' }}>×</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="field">
+                      <label>Personal breaks</label>
+                      <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginBottom: 8 }}>
+                        Customers can't book this barber during these times. These are separate from the shop-wide breaks on the Schedule page.
+                      </p>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 8 }}>
+                        <select className="select" style={{ width: 140 }} value={breakDraft.dayOfWeek} onChange={(e) => setBreakDraft({ ...breakDraft, dayOfWeek: e.target.value })}>
+                          <option value="">Every day</option>
+                          {DAY_NAMES.map((d, i) => <option key={d} value={i}>{d}</option>)}
+                        </select>
+                        <input className="input" type="time" style={{ width: 120 }} value={breakDraft.start} onChange={(e) => setBreakDraft({ ...breakDraft, start: e.target.value })} />
+                        <span>to</span>
+                        <input className="input" type="time" style={{ width: 120 }} value={breakDraft.end} onChange={(e) => setBreakDraft({ ...breakDraft, end: e.target.value })} />
+                        <button type="button" className="btn btn-outline btn-sm" onClick={addBreak}>Add break</button>
+                      </div>
+                      {barberForm.breaks.length === 0 ? (
+                        <p style={{ fontSize: 12, color: 'var(--brown-soft)', fontStyle: 'italic' }}>No personal breaks.</p>
+                      ) : (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                          {barberForm.breaks.map((br, idx) => (
+                            <span key={`${br.dayOfWeek}-${br.start}-${br.end}-${idx}`} className="badge badge-confirmed" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {br.dayOfWeek === null ? 'Every day' : DAY_NAMES[br.dayOfWeek]} · {formatTime(br.start)}–{formatTime(br.end)}
+                              <button type="button" aria-label="Remove break" onClick={() => removeBreak(idx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, color: 'var(--danger)' }}>×</button>
                             </span>
                           ))}
                         </div>

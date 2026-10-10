@@ -9,12 +9,15 @@ export default function Categories() {
       service={categoryService}
       columns={[
         { key: 'name', label: 'Name' },
+        { key: 'nameAr', label: 'Arabic name', render: (r) => <span dir="rtl">{r.nameAr || '—'}</span> },
         { key: 'description', label: 'Description' },
         { key: 'isActive', label: 'Active', render: (r) => (r.isActive ? 'Yes' : 'No') },
       ]}
       fields={[
-        { name: 'name', label: 'Name', required: true },
-        { name: 'description', label: 'Description', type: 'textarea' },
+        { name: 'name', label: 'Name (English)', required: true },
+        { name: 'nameAr', label: 'الاسم (Arabic name)', dir: 'rtl' },
+        { name: 'description', label: 'Description (English)', type: 'textarea' },
+        { name: 'descriptionAr', label: 'الوصف (Arabic description)', type: 'textarea', dir: 'rtl' },
         { name: 'isActive', label: 'Active', type: 'checkbox' },
       ]}
     />

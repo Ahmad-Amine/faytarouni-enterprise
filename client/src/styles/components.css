@@ -1208,3 +1208,21 @@ body {
   opacity: 1 !important;
   cursor: not-allowed !important;
 }
+
+/* Admin appointment status dropdown: follows the dark admin theme instead of
+   a hard-coded white box, tinted by the current status. */
+.status-select { height:45px; width:150px; font-weight:700; border-width:2px; }
+.admin-shell .status-select { background:#0b1d16; color:var(--emerald-fg); border-color:var(--emerald-line); }
+.admin-shell .status-select-pending { border-color:rgba(224,165,39,.6); color:#f0c35a; }
+.admin-shell .status-select-confirmed { border-color:rgba(111,224,165,.55); color:var(--emerald-accent); }
+.admin-shell .status-select-completed { border-color:rgba(111,224,165,.35); color:#9fe3c2; }
+.admin-shell .status-select-canceled,
+.admin-shell .status-select-rejected { border-color:rgba(232,98,86,.6); color:#f08a7f; }
+.admin-shell .status-select-no_show { border-color:var(--emerald-line); color:var(--emerald-muted); }
+/* Native dropdown lists inherit OS colors (white) unless options are styled. */
+.admin-shell select option { background:#0b1d16; color:var(--emerald-fg); }
+
+/* Let typed text pick its own direction, so Arabic typed into any field
+   (even on an English page) is laid out right-to-left. */
+input:not([type="number"]):not([type="date"]):not([type="time"]):not([type="tel"]),
+textarea { unicode-bidi: plaintext; }

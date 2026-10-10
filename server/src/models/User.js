@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema(
 
     role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
 
-    guestBookingCode: { type: String, unique: true, sparse: true, index: true },
+    // New self-registered customers start as 'pending' and cannot book online
+    // until an admin approves them. The schema default is 'approved' so that
+    // accounts created before this field existed (and staff/seeded accounts)
+    // keep working without a migration.
+    approvalStatus: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'approved', index: true },
+    approvedAt: { type: Date, default: null },
+    approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
 
     isActive: { type: Boolean, default: true },
     isEmailVerified: { type: Boolean, default: false },

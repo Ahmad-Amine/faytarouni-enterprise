@@ -1,6 +1,8 @@
 const BaseRepository = require('./BaseRepository');
 const ProductSale = require('../models/ProductSale');
 
+const PERIOD_FORMATS = { day: '%Y-%m-%d', month: '%Y-%m', year: '%Y' };
+
 class ProductSaleRepository extends BaseRepository {
   constructor() {
     super(ProductSale);
@@ -16,11 +18,16 @@ class ProductSaleRepository extends BaseRepository {
   }
 
   revenueByMonth(start) {
+    return this.revenueByPeriod(start, 'month');
+  }
+
+  revenueByPeriod(start, period = 'month', end = null) {
+    const createdAt = end ? { $gte: start, $lt: end } : { $gte: start };
     return this.model.aggregate([
-      { $match: { createdAt: { $gte: start } } },
+      { $match: { createdAt } },
       {
         $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+          _id: { $dateToString: { format: PERIOD_FORMATS[period] || PERIOD_FORMATS.month, date: '$createdAt' } },
           total: { $sum: '$total' },
           count: { $sum: 1 },
         },

@@ -52,7 +52,12 @@
     "booked": "Booked",
     "onHoliday": "Unavailable",
     "countryCodeLocked": "Country code is locked to the one saved on your account.",
-    "loginRequired": "Sign in or create an account to book."
+    "loginRequired": "Sign in or create an account to book.",
+    "onBreak": "On break",
+    "pendingApprovalTitle": "Your account is waiting for approval",
+    "pendingApprovalBody": "Thanks for signing up! The shop needs to approve your account before you can book online. You'll get a notification as soon as it's approved.",
+    "rejectedTitle": "Online booking isn't available for this account",
+    "rejectedBody": "Please contact the shop directly to book your appointment."
   },
   "barbersPage": {
     "title": "Meet the Barbers",

@@ -9,12 +9,14 @@ import CalendarMonth, { toISODate } from '../../components/CalendarMonth';
 import { pushToast } from '../../store/slices/uiSlice';
 import { getDisplayStatus } from '../../utils/appointmentStatus';
 import { localizedServiceName } from '../../utils/localizeCatalog';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 export default function MyAppointments() {
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'ar' ? 'ar-LB' : 'en';
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
+  const formatTime = useTimeFormat();
   const { data: appointments, isLoading } = useQuery({ queryKey: ['myAppointments'], queryFn: bookingService.myAppointments });
 
   const [rescheduling, setRescheduling] = useState(null);
@@ -68,7 +70,7 @@ export default function MyAppointments() {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                   <p style={{ fontFamily: 'var(--font-display)', fontSize: 18 }}>
-                    {new Date(a.date).toLocaleDateString(locale, { timeZone: 'UTC' })} · {a.startTime}
+                    {new Date(a.date).toLocaleDateString(locale, { timeZone: 'UTC' })} · {formatTime(a.startTime)}
                   </p>
                   <p style={{ color: 'var(--brown-soft)', fontSize: 14 }}>{a.barber?.name}</p>
                   <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 4 }}>{a.services.map((s) => localizedServiceName(s, i18n.language === 'ar' ? 'ar' : 'en')).join('، ')}</p>

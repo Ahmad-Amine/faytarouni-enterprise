@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminReviewService } from '../../services/adminService';
 import { Spinner, EmptyState } from '../../components/Feedback';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 function formatDate(value) {
   return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
@@ -8,6 +9,7 @@ function formatDate(value) {
 
 export default function Reviews() {
   const queryClient = useQueryClient();
+  const formatTime = useTimeFormat();
   const { data, isLoading } = useQuery({ queryKey: ['admin', 'reviews'], queryFn: () => adminReviewService.list({ limit: 100 }) });
 
   const publishMutation = useMutation({
@@ -29,7 +31,7 @@ export default function Reviews() {
               <p style={{ fontWeight: 700 }}>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)} — {r.customer?.name} on {r.barber?.name}</p>
               <p style={{ fontSize: 12, color: 'var(--brown-soft)', marginTop: 2 }}>
                 {r.customer?.email} · {formatDate(r.createdAt)}
-                {r.appointment && ` · visit on ${formatDate(r.appointment.date)} at ${r.appointment.startTime} (${(r.appointment.services || []).map((s) => s.name).join(', ')})`}
+                {r.appointment && ` · visit on ${formatDate(r.appointment.date)} at ${formatTime(r.appointment.startTime)} (${(r.appointment.services || []).map((s) => s.name).join(', ')})`}
               </p>
               {r.comment && <p style={{ fontSize: 14, marginTop: 6 }}>{r.comment}</p>}
               <span className={`badge ${r.isPublished ? 'badge-completed' : 'badge-pending'}`} style={{ marginTop: 6, display: 'inline-block' }}>

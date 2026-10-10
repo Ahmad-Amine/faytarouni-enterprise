@@ -15,6 +15,7 @@ exports.getPublic = catchAsync(async (req, res) => {
     businessName: settings.businessName,
     logoUrl: settings.logoUrl,
     currency: settings.currency,
+    timeFormat: settings.timeFormat || '24h',
     contacts: settings.contacts,
     texts: settings.texts,
     theme: settings.theme,
@@ -40,12 +41,21 @@ exports.updateText = catchAsync(async (req, res) => {
 
 exports.updateRules = catchAsync(async (req, res) => {
   const settings = await getOrCreate();
-  const { businessName, logoUrl, currency, timezone, loyaltyAppointmentThreshold, whatsappAdminNumber, primaryColor } =
-    req.body;
+  const {
+    businessName,
+    logoUrl,
+    currency,
+    timezone,
+    timeFormat,
+    loyaltyAppointmentThreshold,
+    whatsappAdminNumber,
+    primaryColor,
+  } = req.body;
   if (businessName !== undefined) settings.businessName = businessName;
   if (logoUrl !== undefined) settings.logoUrl = logoUrl;
   if (currency !== undefined) settings.currency = currency;
   if (timezone !== undefined) settings.timezone = timezone;
+  if (timeFormat !== undefined) settings.timeFormat = timeFormat;
   if (loyaltyAppointmentThreshold !== undefined) settings.loyaltyAppointmentThreshold = loyaltyAppointmentThreshold;
   if (whatsappAdminNumber !== undefined) settings.whatsappAdminNumber = whatsappAdminNumber;
   if (primaryColor !== undefined) settings.theme.primaryColor = primaryColor;

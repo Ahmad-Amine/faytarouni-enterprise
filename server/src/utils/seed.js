@@ -165,9 +165,9 @@ async function seed() {
 
   const whatsappTemplateSeeds = [
     {
-      name: 'Booking Code Reminder',
-      body: 'Hi {{name}}, this is {{businessName}}. Your booking code is {{code}}.',
-      description: 'Share a customer\'s guest booking code.',
+      name: 'Account Approved',
+      body: 'Hi {{name}}, this is {{businessName}}. Your account has been approved, you can now book online.',
+      description: 'Tell a customer their account was approved for online booking.',
     },
     {
       name: 'Appointment Reminder',

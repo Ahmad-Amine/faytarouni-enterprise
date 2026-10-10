@@ -5,6 +5,7 @@ import { Spinner, EmptyState } from '../../components/Feedback';
 import { adminAppointmentService } from '../../services/adminService';
 import WhatsAppButton from '../../components/WhatsAppButton';
 import { getDisplayStatus } from '../../utils/appointmentStatus';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'rejected', 'canceled', 'completed', 'no_show'];
 const STATUS_LABELS = {
@@ -29,6 +30,7 @@ export default function AdminAppointments() {
   const [activeSearch, setActiveSearch] = useState('');
   const [groupBy, setGroupBy] = useState('status');
   const queryClient = useQueryClient();
+  const formatTime = useTimeFormat();
 
   const monthStr = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`;
 
@@ -170,7 +172,7 @@ export default function AdminAppointments() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
                         <div>
                           <p style={{ fontFamily: 'var(--font-display)', fontSize: 17 }}>
-                            {activeSearch ? `${formatUTCDate(a.date)} · ` : ''}{a.startTime} · {a.customerName}
+                            {activeSearch ? `${formatUTCDate(a.date)} · ` : ''}{formatTime(a.startTime)} · {a.customerName}
                           </p>
                           <p style={{ fontSize: 13, color: 'var(--brown-soft)' }}>{a.customerPhone}</p>
                           <p style={{ fontSize: 13, marginTop: 4 }}>{a.barber?.name}</p>
@@ -196,10 +198,10 @@ export default function AdminAppointments() {
                             vars={{
                               name: a.customerName,
                               date: a.date ? formatUTCDate(a.date) : selectedISO,
-                              time: a.startTime,
+                              time: formatTime(a.startTime),
                               barberName: a.barber?.name || '',
                             }}
-                            fallbackMessage={`Hi ${a.customerName}, about your appointment on ${a.date ? formatUTCDate(a.date) : selectedISO} at ${a.startTime}...`}
+                            fallbackMessage={`Hi ${a.customerName}, about your appointment on ${a.date ? formatUTCDate(a.date) : selectedISO} at ${formatTime(a.startTime)}...`}
                           />
                           {canMarkPaid && (
                             <button
@@ -228,15 +230,7 @@ export default function AdminAppointments() {
                           <div>
                             <label style={{ fontSize: 11, color: 'var(--brown-soft)', display: 'block', marginBottom: 2 }}>Status</label>
                             <select
-                              className="select"
-                              style={{
-                                height: 45,
-                                width: 150,
-                                fontWeight: 700,
-                                background: '#fff',
-                                border: '2px solid var(--brown)',
-                                color: 'var(--brown)',
-                              }}
+                              className={`select status-select status-select-${a.status}`}
                               value={a.status}
                               onChange={(e) => statusMutation.mutate({ id: a._id, status: e.target.value })}
                             >

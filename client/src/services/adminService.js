@@ -13,6 +13,7 @@ export const adminCustomerService = {
   list: (params) => api.get('/admin/customers', { params }).then((r) => r.data),
   getOne: (id) => api.get(`/admin/customers/${id}`).then((r) => r.data.data),
   setActive: (id, isActive) => api.patch(`/admin/customers/${id}/active`, { isActive }).then((r) => r.data.data),
+  setApproval: (id, status) => api.patch(`/admin/customers/${id}/approval`, { status }).then((r) => r.data.data),
   setPassword: (id, newPassword) => api.patch(`/admin/customers/${id}/password`, { newPassword }),
 };
 
@@ -42,9 +43,10 @@ export const adminScheduleService = {
 
 export const adminReportService = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data.data),
-  revenue: (months) => api.get('/admin/reports/revenue', { params: { months } }).then((r) => r.data.data),
-  productRevenue: (months) => api.get('/admin/reports/product-revenue', { params: { months } }).then((r) => r.data.data),
-  totalRevenue: (months) => api.get('/admin/reports/total-revenue', { params: { months } }).then((r) => r.data.data),
+  revenue: (period, count) => api.get('/admin/reports/revenue', { params: { period, count } }).then((r) => r.data.data),
+  productRevenue: (period, count) => api.get('/admin/reports/product-revenue', { params: { period, count } }).then((r) => r.data.data),
+  totalRevenue: (period, count) => api.get('/admin/reports/total-revenue', { params: { period, count } }).then((r) => r.data.data),
+  revenueSummary: () => api.get('/admin/reports/revenue-summary').then((r) => r.data.data),
   inventory: () => api.get('/admin/reports/inventory').then((r) => r.data.data),
 };
 

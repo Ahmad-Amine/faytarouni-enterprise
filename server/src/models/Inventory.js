@@ -15,8 +15,10 @@ const supplierSchema = new mongoose.Schema(
 const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
+    nameAr: { type: String, default: '', trim: true },
     sku: { type: String, required: true, unique: true, trim: true, uppercase: true },
     description: { type: String, default: '' },
+    descriptionAr: { type: String, default: '' },
     imageUrl: { type: String, default: '' },
     category: { type: String, default: 'general' },
     price: { type: Number, required: true, min: 0 },

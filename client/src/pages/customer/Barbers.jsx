@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { catalogService } from '../../services/publicService';
 import { useSiteSettings, useContentText } from '../../hooks/useSiteSettings';
 import { Spinner } from '../../components/Feedback';
-import { localizedBarberBio } from '../../utils/localizeCatalog';
+import { localizedBarberBio, localizedBarberName, localizedBarberSpecialties } from '../../utils/localizeCatalog';
 
 export default function Barbers() {
   const { t, i18n } = useTranslation();
@@ -20,9 +20,9 @@ export default function Barbers() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 20, marginTop: 24 }}>
         {barbers?.map((b) => (
           <Link key={b._id} to={`/barbers/${b._id}`} className="card" style={{ textAlign: 'center' }}>
-            <img src={b.photoUrl} alt={b.name} style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--accent)', marginBottom: 12 }} />
-            <h3>{b.name}</h3>
-            {b.specialties?.length > 0 && <p style={{ fontSize: 13, color: 'var(--teal)', marginTop: 4 }}>{b.specialties.join(' · ')}</p>}
+            <img src={b.photoUrl} alt={localizedBarberName(b, lang)} style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--accent)', marginBottom: 12 }} />
+            <h3>{localizedBarberName(b, lang)}</h3>
+            {localizedBarberSpecialties(b, lang).length > 0 && <p style={{ fontSize: 13, color: 'var(--teal)', marginTop: 4 }}>{localizedBarberSpecialties(b, lang).join(' · ')}</p>}
             {localizedBarberBio(b, lang) && <p style={{ fontSize: 13, marginTop: 7 }}>{localizedBarberBio(b, lang)}</p>}
             {b.stats?.ratingCount > 0 && (
               <p style={{ fontSize: 13, marginTop: 6 }}>★ {b.stats.averageRating.toFixed(1)} ({b.stats.ratingCount})</p>

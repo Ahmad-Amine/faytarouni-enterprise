@@ -17,6 +17,7 @@ const defaultTemplates = require('../emails/defaultTemplates');
 const auditService = require('./AuditService');
 const { withBookingMutex } = require('../utils/bookingMutex');
 const { normalizePhone, getCountryDial, isSupportedE164 } = require('../utils/phone');
+const { formatTime, getTimeFormat } = require('../utils/timeFormat');
 
 function normalizeDay(dateInput) {
   if (dateInput instanceof Date) {
@@ -66,6 +67,17 @@ function minutesToTime(mins) {
 
 function isBarberOnHoliday(barber, day) {
   return (barber.holidays || []).some((h) => normalizeDay(h).getTime() === day.getTime());
+}
+
+function barberBreaksForDay(barber, day) {
+  const dayOfWeek = day.getUTCDay();
+  return (barber.breaks || []).filter((b) => b.dayOfWeek === null || b.dayOfWeek === undefined || b.dayOfWeek === dayOfWeek);
+}
+
+function isBarberOnBreak(barber, day, startMins, endMins) {
+  return barberBreaksForDay(barber, day).some(
+    (b) => startMins < timeToMinutes(b.end) && timeToMinutes(b.start) < endMins
+  );
 }
 
 async function assertWithinBusinessHours(date, startTime, endTime, locationId) {
@@ -145,6 +157,13 @@ async function createAppointment(input, actorUser = null) {
   if (appointmentSource === APPOINTMENT_SOURCE.ONLINE && !actorUser) {
     throw ApiError.unauthorized('Please sign in or create an account before booking.');
   }
+  if (appointmentSource === APPOINTMENT_SOURCE.ONLINE && actorUser.approvalStatus !== 'approved') {
+    throw ApiError.forbidden(
+      actorUser.approvalStatus === 'rejected'
+        ? 'Your account was not approved for online booking. Please contact the shop.'
+        : 'Your account is waiting for approval from the shop. You can book once it is approved.'
+    );
+  }
 
   let resolvedUser = actorUser;
   let resolvedCustomerName = customerName;
@@ -186,6 +205,9 @@ async function createAppointment(input, actorUser = null) {
   const endTime = minutesToTime(timeToMinutes(startTime) + totalDuration);
 
   await assertWithinBusinessHours(day, startTime, endTime, locationId);
+  if (isBarberOnBreak(barber, day, timeToMinutes(startTime), timeToMinutes(endTime))) {
+    throw ApiError.badRequest('This barber is on a break during part of that time.');
+  }
   const totals = await computeTotals({ services, couponCode });
 
   const appointment = await withBookingMutex(lockKey, async () => {
@@ -224,9 +246,12 @@ async function createAppointment(input, actorUser = null) {
     }
   });
 
+  const timeFormat = await getTimeFormat();
+  const displayStartTime = formatTime(startTime, timeFormat);
+
   await notificationService.notifyAdmins(
     'new_appointment',
-    `New appointment: ${resolvedCustomerName} booked ${barber.name} on ${formatCalendarDate(day)} at ${startTime}.`,
+    `New appointment: ${resolvedCustomerName} booked ${barber.name} on ${formatCalendarDate(day)} at ${displayStartTime}.`,
     `/admin/appointments?date=${day.toISOString().slice(0, 10)}`
   );
 
@@ -239,7 +264,7 @@ async function createAppointment(input, actorUser = null) {
         {
           name: resolvedCustomerName,
           date: formatCalendarDate(day),
-          startTime,
+          startTime: displayStartTime,
           barberName: barber.name,
           servicesList: services.map((s) => s.name).join(', '),
           total: totals.total.toFixed(2),
@@ -353,6 +378,14 @@ async function rescheduleAppointment(appointmentId, { date, startTime }, actorUs
   const endTime = minutesToTime(timeToMinutes(startTime) + totalDuration);
   await assertWithinBusinessHours(day, startTime, endTime, original.location);
 
+  const barber = await barberRepository.findById(original.barber);
+  if (barber && isBarberOnHoliday(barber, day)) {
+    throw ApiError.badRequest('This barber is not available on the selected date.');
+  }
+  if (barber && isBarberOnBreak(barber, day, timeToMinutes(startTime), timeToMinutes(endTime))) {
+    throw ApiError.badRequest('This barber is on a break during part of that time.');
+  }
+
   const oldDayKey = normalizeDay(original.date).toISOString().slice(0, 10);
   const newDayKey = day.toISOString().slice(0, 10);
   const barberId = String(original.barber);
@@ -402,6 +435,7 @@ module.exports = {
   timeToMinutes,
   minutesToTime,
   isBarberOnHoliday,
+  isBarberOnBreak,
   isPastSlot,
   formatCalendarDate,
 };

@@ -4,8 +4,10 @@ const { objectId } = require('./common');
 const productSchema = z.object({
   body: z.object({
     name: z.string().trim().min(1, 'Name is required.'),
+    nameAr: z.string().trim().max(200).optional(),
     sku: z.string().trim().min(1, 'SKU is required.'),
     description: z.string().optional(),
+    descriptionAr: z.string().max(5000).optional(),
     imageUrl: z.string().optional(),
     category: z.string().optional(),
     price: z.number().min(0),

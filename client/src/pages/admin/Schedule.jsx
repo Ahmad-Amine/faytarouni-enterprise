@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminScheduleService } from '../../services/adminService';
 import { Spinner } from '../../components/Feedback';
+import { useTimeFormat } from '../../hooks/useTimeFormat';
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default function Schedule() {
   const queryClient = useQueryClient();
+  const formatTime = useTimeFormat();
   const { data: hours, isLoading } = useQuery({ queryKey: ['admin', 'schedule', 'hours'], queryFn: () => adminScheduleService.hours() });
   const { data: holidays } = useQuery({ queryKey: ['admin', 'schedule', 'holidays'], queryFn: () => adminScheduleService.holidays() });
 
@@ -105,7 +107,7 @@ export default function Schedule() {
                       className="badge"
                       style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                     >
-                      {b.start}–{b.end}
+                      {formatTime(b.start)}–{formatTime(b.end)}
                       <button
                         type="button"
                         onClick={() => removeBreak(i, idx)}

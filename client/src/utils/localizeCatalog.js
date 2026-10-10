@@ -55,3 +55,25 @@ export function countryName(code, fallback, lang) {
     return fallback;
   }
 }
+
+// Admin-entered Arabic fields (nameAr, bioAr, ...) win in Arabic mode; the
+// English value is the fallback whenever no Arabic text was entered.
+export function localizedBarberName(barber, lang) {
+  if (lang !== 'ar') return barber?.name || '';
+  return barber?.nameAr || barber?.name || '';
+}
+
+export function localizedBarberSpecialties(barber, lang) {
+  if (lang === 'ar' && barber?.specialtiesAr?.length) return barber.specialtiesAr;
+  return barber?.specialties || [];
+}
+
+export function localizedCategoryName(category, lang) {
+  if (lang !== 'ar') return category?.name || '';
+  return category?.nameAr || category?.name || '';
+}
+
+export function localizedCategoryDescription(category, lang) {
+  if (lang !== 'ar') return category?.description || '';
+  return category?.descriptionAr || category?.description || '';
+}

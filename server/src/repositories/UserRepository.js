@@ -25,10 +25,6 @@ class UserRepository extends BaseRepository {
       .select('+passwordResetTokenHash +passwordResetExpires')
       .exec();
   }
-
-  findByGuestCode(code) {
-    return this.model.findOne({ guestBookingCode: String(code).trim() }).populate('role').exec();
-  }
 }
 
 module.exports = new UserRepository();

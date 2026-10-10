@@ -8,7 +8,7 @@ const {
   verifyRefreshToken,
 } = require('../utils/tokens');
 const { generateToken, hashToken } = require('../utils/crypto');
-const { generateUniqueGuestCode } = require('../utils/guestCode');
+const notificationService = require('./NotificationService');
 const emailService = require('./EmailService');
 const defaultTemplates = require('../emails/defaultTemplates');
 const { settingsRepository } = require('../repositories');
@@ -41,11 +41,19 @@ async function register(payload, req) {
   const customerRole = await roleRepository.findOne({ name: 'customer' });
   if (!customerRole) throw ApiError.internal('Customer role is not seeded. Run the seed script.');
 
-  const guestBookingCode = await generateUniqueGuestCode();
-  const user = await userRepository.create({ ...payload, role: customerRole._id, guestBookingCode });
+  const user = await userRepository.create({ ...payload, role: customerRole._id, approvalStatus: 'pending' });
   await user.populate('role');
 
   await sendVerificationEmail(user);
+
+  await notificationService
+    .notifyAdmins(
+      'new_registration',
+      `New account waiting for approval: ${user.name} (${user.phone}).`,
+      `/admin/customers?approval=pending`,
+      user._id
+    )
+    .catch(() => {});
 
   const tokens = await issueSession(user, req);
   await auditService.log(req, { actor: user, action: 'auth.register', entityType: 'User', entityId: user._id });
