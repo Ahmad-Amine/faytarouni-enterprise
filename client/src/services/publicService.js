@@ -12,9 +12,12 @@ export const catalogService = {
 
 export const bookingService = {
   monthAvailability: (month) => api.get('/availability', { params: { month } }).then((r) => r.data.data),
-  daySlots: (date, duration) => api.get(`/availability/${date}`, { params: { duration } }).then((r) => r.data.data),
-  availableBarbers: (date, time, duration) =>
-    api.get(`/availability/${date}/${time}/barbers`, { params: { duration } }).then((r) => r.data.data),
+  daySlots: (date, duration, serviceIds = []) =>
+    api.get(`/availability/${date}`, { params: { duration, serviceIds: serviceIds.join(',') } }).then((r) => r.data.data),
+  availableBarbers: (date, time, duration, serviceIds = []) =>
+    api
+      .get(`/availability/${date}/${time}/barbers`, { params: { duration, serviceIds: serviceIds.join(',') } })
+      .then((r) => r.data.data),
   createAppointment: (payload) => api.post('/appointments', payload).then((r) => r.data.data),
   myAppointments: () => api.get('/my-appointments').then((r) => r.data.data),
   cancelAppointment: (id, reason) => api.patch(`/appointments/${id}/cancel`, { reason }).then((r) => r.data.data),

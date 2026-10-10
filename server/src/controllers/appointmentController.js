@@ -138,6 +138,15 @@ exports.monthAvailabilityOverview = catchAsync(async (req, res, next) => {
   return new ApiResponse(200, { days }).send(res);
 });
 
+// ?serviceIds=a,b,c — limits availability to barbers who offer every one.
+function parseServiceIds(query) {
+  if (!query.serviceIds) return [];
+  return String(query.serviceIds)
+    .split(',')
+    .map((id) => id.trim())
+    .filter((id) => mongoose.Types.ObjectId.isValid(id));
+}
+
 function overlapsAny(appointments, startMins, endMins) {
   return appointments.some((a) => {
     const aStart = bookingService.timeToMinutes(a.startTime);
@@ -158,8 +167,11 @@ exports.daySlots = catchAsync(async (req, res, next) => {
 
   const duration = Number(req.query.duration) > 0 ? Number(req.query.duration) : hours.slotIntervalMinutes || 30;
 
+  const serviceIds = parseServiceIds(req.query);
   const allBarbers = await barberRepository.find({ isActive: true });
-  const workingBarbers = allBarbers.filter((b) => !bookingService.isBarberOnHoliday(b, day));
+  const workingBarbers = allBarbers.filter(
+    (b) => !bookingService.isBarberOnHoliday(b, day) && bookingService.barberOffersServices(b, serviceIds)
+  );
 
   const busyByBarber = new Map();
   await Promise.all(
@@ -186,7 +198,7 @@ exports.daySlots = catchAsync(async (req, res, next) => {
     );
     if (fitsBeforeClose && !inBreak && !bookingService.isPastSlot(req.params.date, time)) {
       const freeBarbers = workingBarbers.filter((b) => isBarberFreeFor(b, cursor, slotEnd));
-      slots.push({ time, isFullyBooked: workingBarbers.length > 0 && freeBarbers.length === 0 });
+      slots.push({ time, isFullyBooked: freeBarbers.length === 0 });
     }
     cursor += hours.slotIntervalMinutes || 30;
   }
@@ -202,7 +214,10 @@ exports.availableBarbers = catchAsync(async (req, res, next) => {
   const hours = await businessHoursRepository.findOne({ dayOfWeek: day.getUTCDay() });
   const duration = Number(req.query.duration) > 0 ? Number(req.query.duration) : hours?.slotIntervalMinutes || 30;
 
-  const allBarbers = await barberRepository.find({ isActive: true }, { sort: { order: 1 } });
+  const serviceIds = parseServiceIds(req.query);
+  const allBarbers = (await barberRepository.find({ isActive: true }, { sort: { order: 1 } })).filter((b) =>
+    bookingService.barberOffersServices(b, serviceIds)
+  );
   const timeMins = bookingService.timeToMinutes(time);
   const endMins = timeMins + duration;
 

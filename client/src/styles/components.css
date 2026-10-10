@@ -1072,17 +1072,24 @@ body {
 .emerald-top-menu { min-width: 70px; padding-inline: 16px; }
 .emerald-brand { flex: 0 1 auto; min-width: 0; }
 
-/* Always expose account actions when the responsive menu is in use. */
+/* Always expose account actions (profile, sign out) in the Menu panel. The
+   Menu button is the only place Sign out lives, so this must apply on
+   desktop too, not just at mobile widths. */
+.emerald-mobile-panel .emerald-mobile-tools {
+  display: grid!important;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  padding-top: 16px;
+  margin-top: 10px;
+  border-top: 1px solid var(--emerald-line)!important;
+}
+.emerald-mobile-panel .emerald-mobile-tools > * { width: 100%; justify-content: center; text-align: center; }
+@media (min-width: 901px) {
+  /* Desktop already shows the language toggle in the header. */
+  .emerald-mobile-panel .emerald-mobile-tools > .language-code-toggle { display: none!important; }
+  .emerald-mobile-panel .emerald-mobile-tools { grid-template-columns: repeat(2,minmax(0,160px)); justify-content: end; }
+}
 @media (max-width: 900px) {
-  .emerald-mobile-panel .emerald-mobile-tools {
-    display: grid!important;
-    grid-template-columns: repeat(2,minmax(0,1fr));
-    gap: 10px;
-    padding-top: 16px;
-    margin-top: 10px;
-    border-top: 1px solid var(--emerald-line)!important;
-  }
-  .emerald-mobile-panel .emerald-mobile-tools > * { width: 100%; justify-content: center; text-align: center; }
   .emerald-brand { max-width: calc(100% - 88px)!important; white-space:nowrap; overflow:visible; text-overflow:clip; font-size:clamp(12px,3.5vw,15px); letter-spacing:.09em; }
 }
 

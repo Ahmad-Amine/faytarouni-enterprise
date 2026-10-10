@@ -19,6 +19,17 @@ export default function WalkIns() {
 
   const mutation = useMutation({ mutationFn: adminAppointmentService.createWalkIn });
 
+  // Only offer the services the admin ticked for the chosen barber.
+  const selectedBarber = barbers.find((b) => b._id === form.barberId);
+  const barberServiceIds = new Set((selectedBarber?.services || []).map((s) => s?._id || s));
+  const barberServices = selectedBarber ? services.filter((s) => barberServiceIds.has(s._id)) : [];
+
+  const selectBarber = (barberId) => {
+    const barber = barbers.find((b) => b._id === barberId);
+    const allowed = new Set((barber?.services || []).map((s) => s?._id || s));
+    setForm((f) => ({ ...f, barberId, serviceIds: f.serviceIds.filter((id) => allowed.has(id)) }));
+  };
+
   const toggleService = (id) =>
     setForm((f) => ({ ...f, serviceIds: f.serviceIds.includes(id) ? f.serviceIds.filter((x) => x !== id) : [...f.serviceIds, id] }));
 
@@ -38,7 +49,7 @@ export default function WalkIns() {
 
         <div className="field">
           <label>Barber</label>
-          <select className="select" required value={form.barberId} onChange={(e) => setForm({ ...form, barberId: e.target.value })}>
+          <select className="select" required value={form.barberId} onChange={(e) => selectBarber(e.target.value)}>
             <option value="">Select barber...</option>
             {barbers.map((b) => <option key={b._id} value={b._id}>{b.name}</option>)}
           </select>
@@ -46,7 +57,11 @@ export default function WalkIns() {
 
         <div className="field">
           <label>Services</label>
-          {services.map((s) => (
+          {!selectedBarber && <p style={{ fontSize: 12, color: 'var(--brown-soft)' }}>Select a barber to see their services.</p>}
+          {selectedBarber && barberServices.length === 0 && (
+            <p style={{ fontSize: 12, color: 'var(--danger)' }}>This barber has no services assigned. Tick their services under Staff first.</p>
+          )}
+          {barberServices.map((s) => (
             <label key={s._id} className="checkbox-row" style={{ marginBottom: 4 }}>
               <input type="checkbox" checked={form.serviceIds.includes(s._id)} onChange={() => toggleService(s._id)} />
               {s.name} — ${s.price.toFixed(2)}

@@ -69,6 +69,13 @@ function isBarberOnHoliday(barber, day) {
   return (barber.holidays || []).some((h) => normalizeDay(h).getTime() === day.getTime());
 }
 
+// A barber can only be booked for services the admin ticked on their
+// profile. barber.services may hold ids or populated Service documents.
+function barberOffersServices(barber, serviceIds = []) {
+  const offered = new Set((barber.services || []).map((s) => String(s?._id || s)));
+  return serviceIds.every((id) => offered.has(String(id)));
+}
+
 function barberBreaksForDay(barber, day) {
   const dayOfWeek = day.getUTCDay();
   return (barber.breaks || []).filter((b) => b.dayOfWeek === null || b.dayOfWeek === undefined || b.dayOfWeek === dayOfWeek);
@@ -200,6 +207,9 @@ async function createAppointment(input, actorUser = null) {
 
   const services = await serviceRepository.find({ _id: { $in: serviceIds }, isActive: true });
   if (services.length !== serviceIds.length) throw ApiError.badRequest('One or more services are unavailable.');
+  if (!barberOffersServices(barber, serviceIds)) {
+    throw ApiError.badRequest('This barber does not offer one or more of the selected services.');
+  }
 
   const totalDuration = services.reduce((sum, s) => sum + s.durationMinutes, 0);
   const endTime = minutesToTime(timeToMinutes(startTime) + totalDuration);
@@ -436,6 +446,7 @@ module.exports = {
   minutesToTime,
   isBarberOnHoliday,
   isBarberOnBreak,
+  barberOffersServices,
   isPastSlot,
   formatCalendarDate,
 };

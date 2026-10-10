@@ -73,14 +73,14 @@ export default function Booking() {
   );
 
   const { data: slotsData, isFetching: loadingSlots } = useQuery({
-    queryKey: ['availability', 'day', selectedDate, totalDuration],
-    queryFn: () => bookingService.daySlots(selectedDate, totalDuration),
+    queryKey: ['availability', 'day', selectedDate, totalDuration, selectedServiceIds],
+    queryFn: () => bookingService.daySlots(selectedDate, totalDuration, selectedServiceIds),
     enabled: !!selectedDate && totalDuration > 0,
   });
 
   const { data: barbersData, isFetching: loadingBarbers } = useQuery({
-    queryKey: ['availability', 'barbers', selectedDate, selectedTime, totalDuration],
-    queryFn: () => bookingService.availableBarbers(selectedDate, selectedTime, totalDuration),
+    queryKey: ['availability', 'barbers', selectedDate, selectedTime, totalDuration, selectedServiceIds],
+    queryFn: () => bookingService.availableBarbers(selectedDate, selectedTime, totalDuration, selectedServiceIds),
     enabled: !!selectedDate && !!selectedTime && totalDuration > 0,
   });
 
