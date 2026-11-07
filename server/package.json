@@ -9,7 +9,8 @@
     "dev": "nodemon src/server.js",
     "seed": "node src/utils/seed.js",
     "build": "echo \"No build step needed for the API\"",
-    "retention:run": "node src/utils/runRetention.js"
+    "retention:run": "node src/utils/runRetention.js",
+    "whatsapp:templates": "node src/utils/createWhatsAppTemplates.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
