@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import CalendarMonth, { toISODate } from '../../components/CalendarMonth';
 import { Spinner, EmptyState } from '../../components/Feedback';
 import { adminAppointmentService } from '../../services/adminService';
 import WhatsAppButton from '../../components/WhatsAppButton';
+import WhatsAppSendModal, { useWhatsAppAccess } from '../../components/WhatsAppSendModal';
+import { whatsappTemplateService } from '../../services/resourceService';
+import { pushToast } from '../../store/slices/uiSlice';
 import { getDisplayStatus } from '../../utils/appointmentStatus';
 import { useTimeFormat } from '../../hooks/useTimeFormat';
 
@@ -19,6 +24,14 @@ const STATUS_LABELS = {
 const GROUP_ORDER = ['pending', 'confirmed', 'completed', 'no_show', 'rejected', 'canceled'];
 const GROUP_LABELS = { ...STATUS_LABELS, pending: 'Pending', confirmed: 'Confirmed' };
 
+// These statuses send a template by themselves once one is assigned to the event.
+const STATUS_EVENTS = {
+  confirmed: 'appointment_confirmed',
+  rejected: 'appointment_rejected',
+  canceled: 'appointment_canceled',
+};
+const NOTIFY_STATUSES = ['confirmed', 'rejected', 'canceled', 'completed', 'no_show'];
+
 function formatUTCDate(value) {
   return new Date(value).toLocaleDateString(undefined, { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -31,6 +44,36 @@ export default function AdminAppointments() {
   const [groupBy, setGroupBy] = useState('status');
   const queryClient = useQueryClient();
   const formatTime = useTimeFormat();
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [statusNotice, setStatusNotice] = useState(null);
+  const { connected } = useWhatsAppAccess(statusNotice?.appointment?._id);
+
+  const { data: templateData } = useQuery({
+    queryKey: ['admin', 'whatsapp-templates', 'events'],
+    queryFn: () => whatsappTemplateService.list({ limit: 100 }),
+    enabled: connected,
+    retry: false,
+  });
+  const automaticEvents = new Set((templateData?.data || []).filter((template) => template.metaName).map((template) => template.event));
+
+  const appointmentVars = (a) => ({
+    name: a.customerName,
+    date: a.date ? formatUTCDate(a.date) : selectedISO,
+    time: formatTime(a.startTime),
+    barberName: a.barber?.name || '',
+  });
+
+  // Offer a message after a status change, unless the server has already sent
+  // the template for it, so the customer isn't told twice.
+  const offerStatusMessage = (appointment, status) => {
+    if (!NOTIFY_STATUSES.includes(status)) return;
+    if (connected && automaticEvents.has(STATUS_EVENTS[status])) {
+      dispatch(pushToast(t('whatsapp.sentAutomatically')));
+      return;
+    }
+    setStatusNotice({ appointment, status });
+  };
 
   const monthStr = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`;
 
@@ -54,9 +97,10 @@ export default function AdminAppointments() {
 
   const statusMutation = useMutation({
     mutationFn: ({ id, status, paymentMethod }) => adminAppointmentService.changeStatus(id, { status, paymentMethod }),
-    onSuccess: () => {
+    onSuccess: (_, { status, notifyAppointment }) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'appointments'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      if (notifyAppointment) offerStatusMessage(notifyAppointment, status);
     },
   });
 
@@ -196,12 +240,7 @@ export default function AdminAppointments() {
                           <WhatsAppButton
                             phone={a.customerPhone}
                             appointmentId={a._id}
-                            vars={{
-                              name: a.customerName,
-                              date: a.date ? formatUTCDate(a.date) : selectedISO,
-                              time: formatTime(a.startTime),
-                              barberName: a.barber?.name || '',
-                            }}
+                            vars={appointmentVars(a)}
                             fallbackMessage={`Hi ${a.customerName}, about your appointment on ${a.date ? formatUTCDate(a.date) : selectedISO} at ${formatTime(a.startTime)}...`}
                           />
                           {canMarkPaid && (
@@ -233,7 +272,7 @@ export default function AdminAppointments() {
                             <select
                               className={`select status-select status-select-${a.status}`}
                               value={a.status}
-                              onChange={(e) => statusMutation.mutate({ id: a._id, status: e.target.value })}
+                              onChange={(e) => statusMutation.mutate({ id: a._id, status: e.target.value, notifyAppointment: a })}
                             >
                               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
                             </select>
@@ -248,6 +287,15 @@ export default function AdminAppointments() {
           ))}
         </div>
       </div>
+      <WhatsAppSendModal
+        open={Boolean(statusNotice)}
+        onClose={() => setStatusNotice(null)}
+        phone={statusNotice?.appointment.customerPhone}
+        vars={statusNotice ? appointmentVars(statusNotice.appointment) : {}}
+        appointmentId={statusNotice?.appointment._id}
+        title={statusNotice ? t('whatsapp.notifyCustomerTitle', { name: statusNotice.appointment.customerName }) : ''}
+        initialMessage={statusNotice ? t(`whatsapp.statusMessage.${statusNotice.status}`, { ...appointmentVars(statusNotice.appointment), interpolation: { escapeValue: false } }) : ''}
+      />
     </div>
   );
 }

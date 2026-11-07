@@ -234,6 +234,21 @@
     "skipped": {
       "invalid_phone": "skipped, phone number is not valid",
       "opted_out": "skipped, opted out of WhatsApp"
+    },
+    "sendTitle": "Send WhatsApp message",
+    "messageLabel": "Message",
+    "messageSent": "WhatsApp message sent.",
+    "sentAutomatically": "Status saved. The customer is notified automatically on WhatsApp if they agreed to messages.",
+    "freeTextHint": "A written message only works within 24 hours of the customer's last message. After that, choose an approved template.",
+    "cancel": "Cancel",
+    "sendViaWhatsApp": "Send via WhatsApp",
+    "notifyCustomerTitle": "Tell {{name}} on WhatsApp",
+    "statusMessage": {
+      "confirmed": "Hi {{name}}, your appointment on {{date}} at {{time}} with {{barberName}} is confirmed. See you soon!",
+      "rejected": "Hi {{name}}, sorry, we could not accept your appointment on {{date}} at {{time}}. Please book another time.",
+      "canceled": "Hi {{name}}, your appointment on {{date}} at {{time}} with {{barberName}} has been canceled.",
+      "completed": "Hi {{name}}, thank you for visiting us today. We hope to see you again soon!",
+      "no_show": "Hi {{name}}, we missed you at your appointment on {{date}} at {{time}}. Would you like to book another time?"
     }
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { adminWhatsAppService } from '../../services/adminService';
@@ -93,10 +93,10 @@ function MessageBubble({ message }) {
   );
 }
 
-function TemplatePicker({ conversationId, initialVars, onSent }) {
+function TemplatePicker({ conversationId, onSent }) {
   const { t } = useTranslation();
   const [templateId, setTemplateId] = useState('');
-  const [vars, setVars] = useState(initialVars || {});
+  const [vars, setVars] = useState({});
   const { data } = useQuery({
     queryKey: ['admin', 'whatsapp-templates', 'approved'],
     queryFn: () => whatsappTemplateService.list({ limit: 100 }),
@@ -141,7 +141,7 @@ function TemplatePicker({ conversationId, initialVars, onSent }) {
   );
 }
 
-function Composer({ conversation, initialVars, onSent }) {
+function Composer({ conversation, onSent }) {
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const [file, setFile] = useState(null);
@@ -175,7 +175,7 @@ function Composer({ conversation, initialVars, onSent }) {
       {!conversation.windowOpen && <p className="wa-notice">{t('whatsapp.windowClosed')}</p>}
       {conversation.optedOut && <p className="wa-notice">{t('whatsapp.optedOut')}</p>}
       {templatesVisible && !conversation.optedOut && (
-        <TemplatePicker conversationId={conversation._id} initialVars={initialVars} onSent={onSent} />
+        <TemplatePicker conversationId={conversation._id} onSent={onSent} />
       )}
       {conversation.windowOpen && (
         <form onSubmit={submit}>
@@ -214,7 +214,7 @@ function Composer({ conversation, initialVars, onSent }) {
   );
 }
 
-function Thread({ conversationId, initialVars, onBack }) {
+function Thread({ conversationId, onBack }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [limit, setLimit] = useState(PAGE_SIZE);
@@ -268,14 +268,13 @@ function Thread({ conversationId, initialVars, onBack }) {
         {messages.map((message) => <MessageBubble key={message._id} message={message} />)}
         <div ref={bottomRef} />
       </div>
-      <Composer key={conversationId} conversation={conversation} initialVars={initialVars} onSent={refresh} />
+      <Composer key={conversationId} conversation={conversation} onSent={refresh} />
     </div>
   );
 }
 
 export default function WhatsAppInbox() {
   const { t } = useTranslation();
-  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const selectedId = params.get('c');
   const { data: status } = useQuery({
@@ -290,7 +289,7 @@ export default function WhatsAppInbox() {
       <div className={`wa-inbox card${selectedId ? ' has-selection' : ''}`}>
         <ConversationList selectedId={selectedId} onSelect={(id) => setParams({ c: id })} />
         {selectedId
-          ? <Thread key={selectedId} conversationId={selectedId} initialVars={location.state?.vars} onBack={() => setParams({})} />
+          ? <Thread key={selectedId} conversationId={selectedId} onBack={() => setParams({})} />
           : <div className="wa-thread wa-thread-empty"><EmptyState>{t('whatsapp.selectConversation')}</EmptyState></div>}
       </div>
     </div>
