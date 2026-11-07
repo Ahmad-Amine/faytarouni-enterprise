@@ -1,7 +1,7 @@
 require('dotenv').config();
 const connectDB = require('../config/db');
 const env = require('../config/env');
-const { DEFAULT_ROLES, PERMISSIONS } = require('../config/constants');
+const { DEFAULT_ROLES } = require('../config/constants');
 
 const Role = require('../models/Role');
 const User = require('../models/User');
@@ -11,9 +11,10 @@ const Barber = require('../models/Barber');
 const { BusinessHours } = require('../models/Schedule');
 const { Product, Supplier } = require('../models/Inventory');
 const { Tax } = require('../models/Commerce');
-const { Settings, EmailTemplate, WhatsAppTemplate } = require('../models/System');
+const { Settings, EmailTemplate } = require('../models/System');
 const defaultTemplates = require('../emails/defaultTemplates');
 const logger = require('../utils/logger');
+const { SETUP_VERSION, grantWhatsAppPermissions, ensureWhatsAppTemplates } = require('./whatsappSetup');
 
 async function seed() {
   await connectDB();
@@ -31,15 +32,10 @@ async function seed() {
     let role = await Role.findOne({ name: r.name });
     if (!role) {
       role = await Role.create({ ...r, isSystem: r.name === 'customer' || r.name === 'admin' });
-    } else if (r.name === 'admin') {
-      await role.save(); // The pre-save hook grants any newly added permissions.
-    } else if (r.name === 'barber') {
-      role = await Role.findByIdAndUpdate(role._id, { $addToSet: { permissions: PERMISSIONS.WHATSAPP_SEND } }, { new: true });
-    } else if (r.name === 'manager') {
-      role = await Role.findByIdAndUpdate(role._id, { $addToSet: { permissions: { $each: [PERMISSIONS.WHATSAPP_INBOX, PERMISSIONS.WHATSAPP_SEND] } } }, { new: true });
     }
     roleDocs[r.name] = role;
   }
+  await grantWhatsAppPermissions();
   logger.info('[seed] roles ensured');
 
   let admin = await User.findOne({ email: env.admin.email });
@@ -134,6 +130,7 @@ async function seed() {
   if (!settingsExists) {
     await Settings.create({
       singleton: 'main',
+      whatsappSetupVersion: SETUP_VERSION,
       businessName: 'Faytarouni Barbershop',
       logoUrl: '',
       whatsappAdminNumber: env.admin.phone,
@@ -169,68 +166,7 @@ async function seed() {
   }
   logger.info('[seed] email templates ensured');
 
-  const whatsappTemplateSeeds = [
-    {
-      name: 'Account Approved',
-      body: 'Hi {{name}}, this is {{businessName}}. Your account has been approved, you can now book online.',
-      description: 'Tell a customer their account was approved for online booking.',
-      event: 'account_approved',
-    },
-    {
-      name: 'Account Not Approved',
-      body: 'Hi {{name}}, this is {{businessName}}. Your account was not approved for online booking. Please contact the shop.',
-      description: 'Tell a customer their account was not approved.',
-      event: 'account_rejected',
-    },
-    {
-      name: 'Appointment Confirmed',
-      body: 'Hi {{name}}, your appointment on {{date}} at {{time}} with {{barberName}} is confirmed. See you soon!',
-      description: 'Sent when an appointment is accepted.',
-      event: 'appointment_confirmed',
-    },
-    {
-      name: 'Appointment Not Accepted',
-      body: 'Hi {{name}}, sorry, we could not accept your appointment on {{date}} at {{time}}. Please book another time.',
-      description: 'Sent when an appointment is rejected.',
-      event: 'appointment_rejected',
-    },
-    {
-      name: 'Appointment Canceled',
-      body: 'Hi {{name}}, your appointment on {{date}} at {{time}} with {{barberName}} has been canceled.',
-      description: 'Sent when the shop cancels an appointment.',
-      event: 'appointment_canceled',
-    },
-    {
-      name: 'Appointment Rescheduled',
-      body: 'Hi {{name}}, your appointment has moved to {{date}} at {{time}} with {{barberName}}.',
-      description: 'Sent when the shop moves an appointment.',
-      event: 'appointment_rescheduled',
-    },
-    {
-      name: 'Appointment Reminder',
-      body: 'Hi {{name}}, this is a reminder about your appointment on {{date}} at {{time}} with {{barberName}}. See you soon!',
-      description: 'Remind a customer about an upcoming appointment.',
-      event: 'appointment_reminder',
-    },
-    {
-      name: 'Appointment Follow-up',
-      body: 'Hi {{name}}, about your appointment on {{date}} at {{time}}...',
-      description: 'General follow-up about a specific appointment.',
-    },
-    {
-      name: 'Loyalty Gift',
-      body: 'Hi {{name}}, thank you for being such a loyal customer! As a small thank-you from us, you have a gift waiting for you on your next visit.',
-      description: 'Sent when a customer crosses the loyalty appointment threshold.',
-    },
-  ];
-  for (const t of whatsappTemplateSeeds) {
-    const exists = await WhatsAppTemplate.findOne({ name: t.name });
-    if (!exists) {
-      await WhatsAppTemplate.create(t);
-    } else if (t.event && !exists.event && !(await WhatsAppTemplate.exists({ event: t.event }))) {
-      await WhatsAppTemplate.updateOne({ _id: exists._id }, { event: t.event });
-    }
-  }
+  await ensureWhatsAppTemplates();
   logger.info('[seed] whatsapp templates ensured');
 
   logger.info('[seed] done');

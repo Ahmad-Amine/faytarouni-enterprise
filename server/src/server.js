@@ -5,6 +5,7 @@ const app = require('./app');
 const { initSocket } = require('./socket');
 const scheduleJobs = require('./jobs');
 const logger = require('./utils/logger');
+const { runWhatsAppSetup } = require('./utils/whatsappSetup');
 
 process.on('uncaughtException', (err) => {
   logger.error('UNCAUGHT EXCEPTION - shutting down...', { error: err.message, stack: err.stack });
@@ -13,6 +14,7 @@ process.on('uncaughtException', (err) => {
 
 (async () => {
   await connectDB();
+  await runWhatsAppSetup();
 
   const server = http.createServer(app);
   initSocket(server);

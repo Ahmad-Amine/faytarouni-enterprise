@@ -11,6 +11,7 @@ const settingsSchema = new mongoose.Schema(
     timeFormat: { type: String, enum: ['12h', '24h'], default: '24h' },
     loyaltyAppointmentThreshold: { type: Number, default: 10 },
     whatsappAdminNumber: { type: String, default: '' },
+    whatsappSetupVersion: { type: Number, default: 0 },
     contacts: {
       type: [
         new mongoose.Schema(
