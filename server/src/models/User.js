@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema(
     approvedAt: { type: Date, default: null },
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
 
+    // Consent to receive WhatsApp messages from the shop outside a conversation
+    // the customer started. Replying STOP clears it.
+    whatsappOptIn: { type: Boolean, default: false },
+    whatsappOptInAt: { type: Date, default: null },
+
     isActive: { type: Boolean, default: true },
     isEmailVerified: { type: Boolean, default: false },
     emailVerificationTokenHash: { type: String, select: false, default: null },

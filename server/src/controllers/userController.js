@@ -6,6 +6,7 @@ const authService = require('../services/AuthService');
 const { disconnectUserSockets } = require('../socket');
 const auditService = require('../services/AuditService');
 const notificationService = require('../services/NotificationService');
+const whatsappService = require('../services/WhatsAppService');
 
 /**
  * SECURITY: every handler below that touches an arbitrary :id must confirm
@@ -90,6 +91,11 @@ exports.setApproval = catchAsync(async (req, res, next) => {
         status === 'approved' ? '/book' : ''
       )
       .catch(() => {});
+
+    whatsappService.notifyEvent(status === 'approved' ? 'account_approved' : 'account_rejected', {
+      phone: user.phone,
+      name: user.name,
+    });
   }
 
   return new ApiResponse(200, user.toSafeObject(), 'Approval updated.').send(res);

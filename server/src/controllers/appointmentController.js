@@ -3,6 +3,8 @@ const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
 const bookingService = require('../services/BookingService');
+const whatsappService = require('../services/WhatsAppService');
+const auditService = require('../services/AuditService');
 const { appointmentRepository, barberRepository, businessHoursRepository, holidayRepository } = require('../repositories');
 const { APPOINTMENT_SOURCE } = require('../config/constants');
 
@@ -65,6 +67,30 @@ exports.changeStatus = catchAsync(async (req, res, next) => {
   const { status, adminNote, paymentMethod } = req.body;
   const updated = await bookingService.changeStatus(req.params.id, status, req.user, req, { adminNote, paymentMethod });
   return new ApiResponse(200, updated, `Appointment marked ${status}.`).send(res);
+});
+
+exports.sendWhatsApp = catchAsync(async (req, res, next) => {
+  const appointment = await appointmentRepository.findById(req.params.id, { populate: 'customer' });
+  if (!appointment) return next(ApiError.notFound('Appointment not found.'));
+
+  const ownBarberId = await resolveOwnBarberId(req.user);
+  if (ownBarberId !== null && (!ownBarberId || String(appointment.barber) !== ownBarberId)) {
+    return next(ApiError.forbidden());
+  }
+
+  const message = await whatsappService.sendToPhone(
+    { phone: appointment.customer?.phone || appointment.customerPhone, name: appointment.customerName },
+    req.body,
+    req.user
+  );
+  await auditService.log(req, {
+    actor: req.user,
+    action: 'whatsapp.message_sent',
+    entityType: 'Appointment',
+    entityId: appointment._id,
+    changes: { type: message.type, status: message.status },
+  });
+  return new ApiResponse(201, message).send(res);
 });
 
 exports.setPaymentStatus = catchAsync(async (req, res, next) => {

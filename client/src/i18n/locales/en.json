@@ -103,7 +103,8 @@
     "requestNewLink": "Request a new link",
     "emailVerified": "Email verified!",
     "goHome": "Go home",
-    "phonePlaceholder": "70 123 456"
+    "phonePlaceholder": "70 123 456",
+    "whatsappOptIn": "I agree to receive appointment messages from the shop on WhatsApp. I can reply STOP at any time."
   },
   "myAppointments": {
     "title": "My Appointments",
@@ -148,7 +149,8 @@
     "newPassword": "New password",
     "updatePassword": "Update password",
     "updated": "Profile updated.",
-    "passwordUpdated": "Password updated. Please sign in again."
+    "passwordUpdated": "Password updated. Please sign in again.",
+    "whatsappOptIn": "Receive appointment messages on WhatsApp"
   },
   "reviews": {
     "title": "Reviews",
@@ -172,5 +174,66 @@
     "phoneDigits": "Enter digits only, no spaces or symbols.",
     "passwordMin": "Password must be at least 8 characters.",
     "passwordRequired": "Password is required."
+  },
+  "whatsapp": {
+    "automaticTag": "Automatic message",
+    "inboxTitle": "WhatsApp Inbox",
+    "notConnected": "WhatsApp is not connected yet. Add the WhatsApp number and credentials on the server to start sending and receiving.",
+    "searchPlaceholder": "Search by name or number",
+    "noConversations": "No conversations yet.",
+    "selectConversation": "Select a conversation to read it.",
+    "noMessages": "No messages yet.",
+    "loadOlder": "Load older messages",
+    "back": "Back",
+    "messagePlaceholder": "Type a message",
+    "captionPlaceholder": "Add a caption (optional)",
+    "attach": "Attach",
+    "removeFile": "Remove",
+    "send": "Send",
+    "sending": "Sending...",
+    "sendFailed": "This message was not delivered.",
+    "templates": "Templates",
+    "chooseTemplate": "Choose an approved template",
+    "sendTemplate": "Send template",
+    "noApprovedTemplates": "No approved templates yet. Add the Meta template name on the WhatsApp Templates page.",
+    "windowClosed": "The 24-hour reply window is closed, so only an approved template can be sent.",
+    "optedOut": "This contact opted out of WhatsApp messages. You can only reply if they message you first.",
+    "broadcastTag": "Staff broadcast",
+    "type": {
+      "image": "Photo",
+      "video": "Video",
+      "audio": "Voice message",
+      "document": "Document",
+      "sticker": "Sticker",
+      "location": "Location",
+      "contacts": "Contact",
+      "reaction": "Reaction",
+      "template": "Template",
+      "other": "Unsupported message"
+    },
+    "status": {
+      "queued": "Sending",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "read": "Read",
+      "failed": "Failed",
+      "received": "Received"
+    },
+    "broadcastTitle": "Staff Broadcast",
+    "broadcastMessage": "Message",
+    "broadcastFormatHint": "Sent on WhatsApp as one paragraph, so line breaks are removed.",
+    "broadcastRoles": "Send to",
+    "broadcastRolesHint": "Leave all unticked to send to every active staff member.",
+    "broadcastSend": "Send to staff",
+    "broadcastConfirm": "Send this WhatsApp message to the selected staff now? Each message is billed by WhatsApp.",
+    "broadcastStarted": "Broadcast started.",
+    "broadcastHistory": "Recent broadcasts",
+    "broadcastEmpty": "No broadcasts yet.",
+    "broadcastCounts": "{{recipients}} recipients · {{delivered}} delivered · {{read}} read · {{failed}} failed",
+    "broadcastPending": "{{count}} still sending",
+    "skipped": {
+      "invalid_phone": "skipped, phone number is not valid",
+      "opted_out": "skipped, opted out of WhatsApp"
+    }
   }
 }

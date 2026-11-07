@@ -22,6 +22,7 @@ const auditLogController = require('../controllers/auditLogController');
 const backupController = require('../controllers/backupController');
 const reportController = require('../controllers/reportController');
 const reviewController = require('../controllers/reviewController');
+const whatsappController = require('../controllers/whatsappController');
 
 const { customerApprovalSchema } = require('../validators/authValidators');
 const { walkInSchema, statusChangeSchema, paymentStatusSchema } = require('../validators/appointmentValidators');
@@ -38,6 +39,14 @@ const {
   businessHoursSchema,
   holidaySchema,
 } = require('../validators/systemValidators');
+const {
+  openConversationSchema,
+  sendTextSchema,
+  sendTemplateSchema,
+  sendMediaSchema,
+  sendAppointmentMessageSchema,
+  staffBroadcastSchema,
+} = require('../validators/whatsappValidators');
 
 const router = express.Router();
 
@@ -65,6 +74,12 @@ router.patch(
   authorize(P.APPOINTMENTS_MANAGE),
   validate(paymentStatusSchema),
   appointmentController.setPaymentStatus
+);
+router.post(
+  '/appointments/:id/whatsapp',
+  authorize(P.WHATSAPP_SEND),
+  validate(sendAppointmentMessageSchema),
+  appointmentController.sendWhatsApp
 );
 router.post(
   '/appointments/walk-in',
@@ -206,6 +221,27 @@ router.post(
 );
 router.patch('/whatsapp-templates/:id', authorize(P.WHATSAPP_TEMPLATES_MANAGE), validate(whatsappTemplateSchema), whatsappTemplateController.update);
 router.delete('/whatsapp-templates/:id', authorize(P.WHATSAPP_TEMPLATES_MANAGE), whatsappTemplateController.remove);
+
+// A single yes/no flag that every WhatsApp button needs, whatever the role.
+router.get('/whatsapp/status', whatsappController.status);
+router.get('/whatsapp/unread', authorize(P.WHATSAPP_INBOX), whatsappController.unreadCount);
+router.get('/whatsapp/conversations', authorize(P.WHATSAPP_INBOX), whatsappController.listConversations);
+router.post('/whatsapp/conversations', authorize(P.WHATSAPP_INBOX), validate(openConversationSchema), whatsappController.openConversation);
+router.get('/whatsapp/conversations/:id', authorize(P.WHATSAPP_INBOX), whatsappController.getConversation);
+router.get('/whatsapp/conversations/:id/messages', authorize(P.WHATSAPP_INBOX), whatsappController.listMessages);
+router.patch('/whatsapp/conversations/:id/read', authorize(P.WHATSAPP_INBOX), whatsappController.markRead);
+router.post('/whatsapp/conversations/:id/messages', authorize(P.WHATSAPP_INBOX), validate(sendTextSchema), whatsappController.sendText);
+router.post('/whatsapp/conversations/:id/template', authorize(P.WHATSAPP_INBOX), validate(sendTemplateSchema), whatsappController.sendTemplate);
+router.post(
+  '/whatsapp/conversations/:id/media',
+  authorize(P.WHATSAPP_INBOX),
+  validate(sendMediaSchema),
+  express.raw({ type: () => true, limit: '16mb' }),
+  whatsappController.sendMedia
+);
+router.get('/whatsapp/media/:id', authorize(P.WHATSAPP_INBOX), whatsappController.downloadMedia);
+router.get('/whatsapp/broadcasts', authorize(P.STAFF_BROADCAST), whatsappController.listBroadcasts);
+router.post('/whatsapp/broadcasts', authorize(P.STAFF_BROADCAST), validate(staffBroadcastSchema), whatsappController.createBroadcast);
 
 router.get('/notifications', authorize(P.NOTIFICATIONS_MANAGE), notificationController.listForAdmin);
 router.patch('/notifications/:id/read', authorize(P.NOTIFICATIONS_MANAGE), notificationController.markRead);

@@ -4,6 +4,9 @@ const { verifyAccessToken } = require('../utils/tokens');
 const env = require('../config/env');
 const logger = require('../utils/logger');
 const { userRepository } = require('../repositories');
+const { PERMISSIONS } = require('../config/constants');
+
+const WHATSAPP_INBOX_ROOM = 'whatsapp-inbox';
 
 let io = null;
 
@@ -51,6 +54,9 @@ function initSocket(httpServer) {
     if (socket.role === 'admin' || socket.role === 'manager') {
       socket.join('admins');
     }
+    if (socket.permissions?.includes(PERMISSIONS.WHATSAPP_INBOX)) {
+      socket.join(WHATSAPP_INBOX_ROOM);
+    }
     if (socket.userId) {
       socket.join(`user:${socket.userId}`);
     }
@@ -81,4 +87,4 @@ function disconnectRoleSockets(roleId) {
   io.in(`role:${roleId}`).disconnectSockets(true);
 }
 
-module.exports = { initSocket, getIO, disconnectUserSockets, disconnectRoleSockets };
+module.exports = { initSocket, getIO, disconnectUserSockets, disconnectRoleSockets, WHATSAPP_INBOX_ROOM };

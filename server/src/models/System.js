@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { WHATSAPP_EVENTS } = require('../config/constants');
 
 const settingsSchema = new mongoose.Schema(
   {
@@ -49,9 +50,15 @@ const whatsAppTemplateSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     body: { type: String, required: true },
     description: { type: String, default: '' },
+    // The matching template approved in Meta's WhatsApp Manager. {{name}}-style
+    // placeholders in `body` map to {{1}}, {{2}}... in first-appearance order.
+    metaName: { type: String, default: '', trim: true },
+    metaLanguage: { type: String, default: 'en', trim: true },
+    event: { type: String, enum: ['', ...WHATSAPP_EVENTS], default: '' },
   },
   { timestamps: true }
 );
+whatsAppTemplateSchema.index({ event: 1 }, { unique: true, partialFilterExpression: { event: { $gt: '' } } });
 
 const notificationSchema = new mongoose.Schema(
   {

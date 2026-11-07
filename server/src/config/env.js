@@ -65,6 +65,19 @@ module.exports = {
 
   csrfSecret: process.env.CSRF_SECRET,
 
+  // Optional: WhatsApp stays switched off until all four credentials are set.
+  whatsapp: {
+    accessToken: process.env.WHATSAPP_ACCESS_TOKEN || '',
+    phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
+    appSecret: process.env.WHATSAPP_APP_SECRET || '',
+    verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || '',
+    graphUrl: (process.env.WHATSAPP_GRAPH_URL || 'https://graph.facebook.com').replace(/\/+$/, ''),
+    apiVersion: process.env.WHATSAPP_API_VERSION || 'v23.0',
+    defaultCountryDial: process.env.WHATSAPP_DEFAULT_COUNTRY_DIAL || '961',
+    broadcastTemplate: process.env.WHATSAPP_BROADCAST_TEMPLATE || 'staff_broadcast',
+    broadcastLanguage: process.env.WHATSAPP_BROADCAST_LANGUAGE || 'en',
+  },
+
   rateLimit: {
     windowMinutes: Number(process.env.RATE_LIMIT_WINDOW_MINUTES || 15),
     max: Number(process.env.RATE_LIMIT_MAX || 300),

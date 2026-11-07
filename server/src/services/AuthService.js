@@ -41,7 +41,12 @@ async function register(payload, req) {
   const customerRole = await roleRepository.findOne({ name: 'customer' });
   if (!customerRole) throw ApiError.internal('Customer role is not seeded. Run the seed script.');
 
-  const user = await userRepository.create({ ...payload, role: customerRole._id, approvalStatus: 'pending' });
+  const user = await userRepository.create({
+    ...payload,
+    role: customerRole._id,
+    approvalStatus: 'pending',
+    whatsappOptInAt: payload.whatsappOptIn ? new Date() : null,
+  });
   await user.populate('role');
 
   await sendVerificationEmail(user);

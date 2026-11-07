@@ -15,6 +15,9 @@ const BACKUP_MODELS = {
   barbers: require('../models/Barber'),
   products: require('../models/Inventory').Product,
   settings: require('../models/System').Settings,
+  whatsappConversations: require('../models/WhatsApp').WhatsAppConversation,
+  whatsappMessages: require('../models/WhatsApp').WhatsAppMessage,
+  staffBroadcasts: require('../models/WhatsApp').StaffBroadcast,
 };
 
 exports.trigger = catchAsync(async (req, res) => {

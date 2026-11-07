@@ -63,6 +63,26 @@ export const adminNotificationService = {
   markAllRead: () => api.patch('/admin/notifications/read-all'),
 };
 
+export const adminWhatsAppService = {
+  status: () => api.get('/admin/whatsapp/status').then((r) => r.data.data),
+  unread: () => api.get('/admin/whatsapp/unread').then((r) => r.data.data),
+  conversations: (params) => api.get('/admin/whatsapp/conversations', { params }).then((r) => r.data),
+  open: (payload) => api.post('/admin/whatsapp/conversations', payload).then((r) => r.data.data),
+  conversation: (id) => api.get(`/admin/whatsapp/conversations/${id}`).then((r) => r.data.data),
+  messages: (id, params) => api.get(`/admin/whatsapp/conversations/${id}/messages`, { params }).then((r) => r.data),
+  markRead: (id) => api.patch(`/admin/whatsapp/conversations/${id}/read`),
+  sendText: (id, text) => api.post(`/admin/whatsapp/conversations/${id}/messages`, { text }).then((r) => r.data.data),
+  sendTemplate: (id, payload) => api.post(`/admin/whatsapp/conversations/${id}/template`, payload).then((r) => r.data.data),
+  sendMedia: (id, file, caption) => api.post(`/admin/whatsapp/conversations/${id}/media`, file, {
+    params: { filename: file.name, ...(caption ? { caption } : {}) },
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+  }).then((r) => r.data.data),
+  sendForAppointment: (appointmentId, payload) => api.post(`/admin/appointments/${appointmentId}/whatsapp`, payload).then((r) => r.data.data),
+  mediaUrl: (messageId) => `/api/v1/admin/whatsapp/media/${messageId}`,
+  broadcasts: (params) => api.get('/admin/whatsapp/broadcasts', { params }).then((r) => r.data),
+  createBroadcast: (payload) => api.post('/admin/whatsapp/broadcasts', payload).then((r) => r.data.data),
+};
+
 export const adminAuditLogService = {
   list: (params) => api.get('/admin/audit-logs', { params }).then((r) => r.data),
 };

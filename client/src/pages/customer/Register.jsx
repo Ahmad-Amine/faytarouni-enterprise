@@ -15,6 +15,7 @@ const makeSchema = (t) => z.object({
   phone: z.string().min(1, t('validation.phoneRequired')).regex(/^\d+$/, t('validation.phoneDigits')),
   password: z.string().min(8, t('validation.passwordMin')),
   birthday: z.string().optional(),
+  whatsappOptIn: z.boolean().optional(),
 });
 
 export default function Register() {
@@ -35,6 +36,7 @@ export default function Register() {
         <div className="field"><label>{t('auth.phone')}</label><div className="phone-field-row"><select className="select phone-code" {...register('countryDial')}>{COUNTRY_CODES.map((c) => <option key={c.code} value={c.dial}>{countryName(c.code, c.name, lang)} ({c.dial})</option>)}</select><input className="input" type="tel" inputMode="numeric" placeholder={t('auth.phonePlaceholder')} {...register('phone')} /></div>{(errors.countryDial || errors.phone) && <p className="field-error">{errors.countryDial?.message || errors.phone?.message}</p>}</div>
         <div className="field"><label>{t('auth.birthday')}</label><input className="input" type="date" {...register('birthday')} /></div>
         <div className="field"><label>{t('auth.password')}</label><input className="input" type="password" {...register('password')} />{errors.password && <p className="field-error">{errors.password.message}</p>}</div>
+        <label className="wa-checkbox" style={{ marginBottom: 16 }}><input type="checkbox" {...register('whatsappOptIn')} /><span>{t('auth.whatsappOptIn')}</span></label>
         <button type="submit" className="btn btn-primary btn-block" disabled={registerPending}>{registerPending ? t('auth.creating') : t('auth.submitRegister')}</button>
       </form>
       <p style={{ marginTop: 20, textAlign: 'center', fontSize: 14 }}>{t('auth.haveAccount')} <Link to="/login" style={{ color: 'var(--accent)', fontWeight: 600 }}>{t('auth.submitLogin')}</Link></p>

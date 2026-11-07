@@ -103,7 +103,8 @@
     "requestNewLink": "طلب رابط جديد",
     "emailVerified": "تم تأكيد البريد الإلكتروني!",
     "goHome": "العودة للرئيسية",
-    "phonePlaceholder": "٧٠ ١٢٣ ٤٥٦"
+    "phonePlaceholder": "٧٠ ١٢٣ ٤٥٦",
+    "whatsappOptIn": "أوافق على تلقي رسائل المواعيد من المحل عبر واتساب، ويمكنني الرد بكلمة STOP في أي وقت."
   },
   "myAppointments": {
     "title": "مواعيدي",
@@ -148,7 +149,8 @@
     "newPassword": "كلمة المرور الجديدة",
     "updatePassword": "تحديث كلمة المرور",
     "updated": "تم تحديث الملف الشخصي.",
-    "passwordUpdated": "تم تحديث كلمة المرور. يرجى تسجيل الدخول مجددًا."
+    "passwordUpdated": "تم تحديث كلمة المرور. يرجى تسجيل الدخول مجددًا.",
+    "whatsappOptIn": "تلقي رسائل المواعيد عبر واتساب"
   },
   "reviews": {
     "title": "التقييمات",
@@ -172,5 +174,66 @@
     "phoneDigits": "أدخل أرقامًا فقط من دون مسافات أو رموز.",
     "passwordMin": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
     "passwordRequired": "كلمة المرور مطلوبة."
+  },
+  "whatsapp": {
+    "automaticTag": "رسالة تلقائية",
+    "inboxTitle": "صندوق واتساب",
+    "notConnected": "واتساب غير متصل بعد. أضف رقم واتساب وبيانات الاعتماد على الخادم لبدء الإرسال والاستقبال.",
+    "searchPlaceholder": "ابحث بالاسم أو الرقم",
+    "noConversations": "لا توجد محادثات بعد.",
+    "selectConversation": "اختر محادثة لقراءتها.",
+    "noMessages": "لا توجد رسائل بعد.",
+    "loadOlder": "تحميل الرسائل الأقدم",
+    "back": "رجوع",
+    "messagePlaceholder": "اكتب رسالة",
+    "captionPlaceholder": "أضف تعليقًا (اختياري)",
+    "attach": "إرفاق",
+    "removeFile": "إزالة",
+    "send": "إرسال",
+    "sending": "جارٍ الإرسال...",
+    "sendFailed": "لم يتم تسليم هذه الرسالة.",
+    "templates": "القوالب",
+    "chooseTemplate": "اختر قالبًا معتمدًا",
+    "sendTemplate": "إرسال القالب",
+    "noApprovedTemplates": "لا توجد قوالب معتمدة بعد. أضف اسم قالب Meta في صفحة قوالب واتساب.",
+    "windowClosed": "انتهت مهلة الرد البالغة 24 ساعة، لذا يمكن إرسال قالب معتمد فقط.",
+    "optedOut": "ألغى جهة الاتصال هذه استقبال رسائل واتساب. يمكنك الرد فقط إذا راسلك أولًا.",
+    "broadcastTag": "رسالة جماعية للموظفين",
+    "type": {
+      "image": "صورة",
+      "video": "فيديو",
+      "audio": "رسالة صوتية",
+      "document": "مستند",
+      "sticker": "ملصق",
+      "location": "موقع",
+      "contacts": "جهة اتصال",
+      "reaction": "تفاعل",
+      "template": "قالب",
+      "other": "رسالة غير مدعومة"
+    },
+    "status": {
+      "queued": "جارٍ الإرسال",
+      "sent": "تم الإرسال",
+      "delivered": "تم التسليم",
+      "read": "تمت القراءة",
+      "failed": "فشل",
+      "received": "مستلمة"
+    },
+    "broadcastTitle": "رسالة جماعية للموظفين",
+    "broadcastMessage": "الرسالة",
+    "broadcastFormatHint": "تُرسل عبر واتساب كفقرة واحدة، لذا تُزال فواصل الأسطر.",
+    "broadcastRoles": "إرسال إلى",
+    "broadcastRolesHint": "اترك الخيارات فارغة للإرسال إلى جميع الموظفين النشطين.",
+    "broadcastSend": "إرسال إلى الموظفين",
+    "broadcastConfirm": "هل تريد إرسال رسالة واتساب هذه إلى الموظفين المحددين الآن؟ يحتسب واتساب رسومًا على كل رسالة.",
+    "broadcastStarted": "بدأ إرسال الرسالة الجماعية.",
+    "broadcastHistory": "الرسائل الجماعية الأخيرة",
+    "broadcastEmpty": "لا توجد رسائل جماعية بعد.",
+    "broadcastCounts": "{{recipients}} مستلمين · {{delivered}} تم التسليم · {{read}} تمت القراءة · {{failed}} فشل",
+    "broadcastPending": "{{count}} قيد الإرسال",
+    "skipped": {
+      "invalid_phone": "تم التخطي، رقم الهاتف غير صالح",
+      "opted_out": "تم التخطي، ألغى استقبال رسائل واتساب"
+    }
   }
 }

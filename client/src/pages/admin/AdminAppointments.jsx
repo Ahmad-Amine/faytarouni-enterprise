@@ -195,6 +195,7 @@ export default function AdminAppointments() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
                           <WhatsAppButton
                             phone={a.customerPhone}
+                            appointmentId={a._id}
                             vars={{
                               name: a.customerName,
                               date: a.date ? formatUTCDate(a.date) : selectedISO,

@@ -28,6 +28,9 @@ const PERMISSIONS = Object.freeze({
   SETTINGS_MANAGE: 'settings:manage',
   EMAIL_TEMPLATES_MANAGE: 'email_templates:manage',
   WHATSAPP_TEMPLATES_MANAGE: 'whatsapp_templates:manage',
+  WHATSAPP_INBOX: 'whatsapp:inbox',
+  WHATSAPP_SEND: 'whatsapp:send',
+  STAFF_BROADCAST: 'staff:broadcast',
   NOTIFICATIONS_MANAGE: 'notifications:manage',
   AUDIT_LOGS_VIEW: 'audit_logs:view',
   BACKUPS_MANAGE: 'backups:manage',
@@ -53,11 +56,18 @@ const DEFAULT_ROLES = [
       PERMISSIONS.REPORTS_VIEW,
       PERMISSIONS.PAYMENTS_TAKE_CASH,
       PERMISSIONS.WHATSAPP_TEMPLATES_MANAGE,
+      PERMISSIONS.WHATSAPP_INBOX,
+      PERMISSIONS.WHATSAPP_SEND,
     ],
   },
   {
     name: 'barber',
-    permissions: [PERMISSIONS.APPOINTMENTS_VIEW_ALL, PERMISSIONS.APPOINTMENTS_MANAGE, PERMISSIONS.WHATSAPP_TEMPLATES_MANAGE],
+    permissions: [
+      PERMISSIONS.APPOINTMENTS_VIEW_ALL,
+      PERMISSIONS.APPOINTMENTS_MANAGE,
+      PERMISSIONS.WHATSAPP_TEMPLATES_MANAGE,
+      PERMISSIONS.WHATSAPP_SEND,
+    ],
   },
 ];
 
@@ -75,6 +85,18 @@ const APPOINTMENT_SOURCE = Object.freeze({
   WALK_IN: 'walk_in',
   ADMIN: 'admin',
 });
+
+// Moments that send a WhatsApp template automatically. An event does nothing
+// until a template with an approved Meta name is assigned to it.
+const WHATSAPP_EVENTS = Object.freeze([
+  'appointment_confirmed',
+  'appointment_rejected',
+  'appointment_canceled',
+  'appointment_rescheduled',
+  'appointment_reminder',
+  'account_approved',
+  'account_rejected',
+]);
 
 const PAYMENT_METHOD = Object.freeze({
   CASH: 'cash',
@@ -100,6 +122,7 @@ module.exports = {
   DEFAULT_ROLES,
   APPOINTMENT_STATUS,
   APPOINTMENT_SOURCE,
+  WHATSAPP_EVENTS,
   PAYMENT_METHOD,
   PURCHASE_ORDER_STATUS,
   COUPON_TYPE,

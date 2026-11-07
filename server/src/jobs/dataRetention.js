@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const AppointmentArchive = require('../models/AppointmentArchive');
 const { Notification, AuditLog } = require('../models/System');
+const { WhatsAppConversation, WhatsAppMessage, StaffBroadcast } = require('../models/WhatsApp');
 const logger = require('../utils/logger');
 
 const DEFAULTS = Object.freeze({
@@ -8,6 +9,7 @@ const DEFAULTS = Object.freeze({
   appointmentArchiveMonths: 36,
   notificationMonths: 12,
   auditLogMonths: 36,
+  whatsappMessageMonths: 12,
   maxDeletePerCollectionPerRun: 5000,
   appointmentBatchSize: 250,
 });
@@ -78,6 +80,11 @@ function getRetentionConfig() {
       DEFAULTS.auditLogMonths,
       { min: 12, max: 240 }
     ),
+    whatsappMessageMonths: envPositiveInt(
+      'DATA_RETENTION_WHATSAPP_MESSAGE_MONTHS',
+      DEFAULTS.whatsappMessageMonths,
+      { min: 1, max: 120 }
+    ),
     maxDeletePerCollectionPerRun: envPositiveInt(
       'DATA_RETENTION_MAX_DELETE_PER_RUN',
       DEFAULTS.maxDeletePerCollectionPerRun,
@@ -122,15 +129,31 @@ function buildArchiveDocument(appointment, archivedAt) {
 }
 
 async function countPlan(cutoffs) {
-  const [appointmentsToArchive, archivesToDelete, notificationsToDelete, auditLogsToDelete] =
+  const [
+    appointmentsToArchive,
+    archivesToDelete,
+    notificationsToDelete,
+    auditLogsToDelete,
+    whatsappMessagesToDelete,
+    staffBroadcastsToDelete,
+  ] =
     await Promise.all([
       Appointment.countDocuments({ date: { $lt: cutoffs.appointmentActive } }),
       AppointmentArchive.countDocuments({ date: { $lt: cutoffs.appointmentArchive } }),
       Notification.countDocuments({ createdAt: { $lt: cutoffs.notifications } }),
       AuditLog.countDocuments({ createdAt: { $lt: cutoffs.auditLogs } }),
+      WhatsAppMessage.countDocuments({ createdAt: { $lt: cutoffs.whatsappMessages } }),
+      StaffBroadcast.countDocuments({ createdAt: { $lt: cutoffs.whatsappMessages } }),
     ]);
 
-  return { appointmentsToArchive, archivesToDelete, notificationsToDelete, auditLogsToDelete };
+  return {
+    appointmentsToArchive,
+    archivesToDelete,
+    notificationsToDelete,
+    auditLogsToDelete,
+    whatsappMessagesToDelete,
+    staffBroadcastsToDelete,
+  };
 }
 
 async function archiveAppointments({ cutoff, maxItems, batchSize, now }) {
@@ -203,6 +226,7 @@ async function runDataRetention({ now = new Date() } = {}) {
     appointmentArchive: monthsAgoUtc(config.appointmentArchiveMonths, now, { startOfDay: true }),
     notifications: monthsAgoUtc(config.notificationMonths, now),
     auditLogs: monthsAgoUtc(config.auditLogMonths, now),
+    whatsappMessages: monthsAgoUtc(config.whatsappMessageMonths, now),
   };
 
   const plan = await countPlan(cutoffs);
@@ -233,7 +257,13 @@ async function runDataRetention({ now = new Date() } = {}) {
     now,
   });
 
-  const [archivesDeleted, notificationsDeleted, auditLogsDeleted] = await Promise.all([
+  const [
+    archivesDeleted,
+    notificationsDeleted,
+    auditLogsDeleted,
+    whatsappMessagesDeleted,
+    staffBroadcastsDeleted,
+  ] = await Promise.all([
     deleteOldestByCutoff(
       AppointmentArchive,
       'date',
@@ -252,7 +282,26 @@ async function runDataRetention({ now = new Date() } = {}) {
       cutoffs.auditLogs,
       config.maxDeletePerCollectionPerRun
     ),
+    deleteOldestByCutoff(
+      WhatsAppMessage,
+      'createdAt',
+      cutoffs.whatsappMessages,
+      config.maxDeletePerCollectionPerRun
+    ),
+    deleteOldestByCutoff(
+      StaffBroadcast,
+      'createdAt',
+      cutoffs.whatsappMessages,
+      config.maxDeletePerCollectionPerRun
+    ),
   ]);
+
+  // Conversations stay because they hold the opt-out record; only the message
+  // text kept in the preview goes.
+  await WhatsAppConversation.updateMany(
+    { lastMessageAt: { $lt: cutoffs.whatsappMessages }, lastMessagePreview: { $ne: '' } },
+    { lastMessagePreview: '' }
+  );
 
   const result = {
     dryRun: false,
@@ -262,6 +311,8 @@ async function runDataRetention({ now = new Date() } = {}) {
     appointmentArchivesDeleted: archivesDeleted,
     notificationsDeleted,
     auditLogsDeleted,
+    whatsappMessagesDeleted,
+    staffBroadcastsDeleted,
   };
 
   logger.info('[data-retention] live cleanup completed', {

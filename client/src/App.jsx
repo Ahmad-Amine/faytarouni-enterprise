@@ -46,6 +46,8 @@ import Roles from './pages/admin/Roles';
 import Settings from './pages/admin/Settings';
 import EmailTemplates from './pages/admin/EmailTemplates';
 import WhatsAppTemplates from './pages/admin/WhatsAppTemplates';
+import WhatsAppInbox from './pages/admin/WhatsAppInbox';
+import StaffBroadcast from './pages/admin/StaffBroadcast';
 import AuditLogs from './pages/admin/AuditLogs';
 import Backups from './pages/admin/Backups';
 
@@ -101,6 +103,8 @@ export default function App() {
           <Route path="roles" element={<RequirePermission permission={PERMISSIONS.ROLES_MANAGE}><Roles /></RequirePermission>} />
           <Route path="settings" element={<RequirePermission permission={PERMISSIONS.SETTINGS_MANAGE}><Settings /></RequirePermission>} />
           <Route path="email-templates" element={<RequirePermission permission={PERMISSIONS.EMAIL_TEMPLATES_MANAGE}><EmailTemplates /></RequirePermission>} />
+          <Route path="whatsapp" element={<RequirePermission permission={PERMISSIONS.WHATSAPP_INBOX}><WhatsAppInbox /></RequirePermission>} />
+          <Route path="staff-broadcast" element={<RequirePermission permission={PERMISSIONS.STAFF_BROADCAST}><StaffBroadcast /></RequirePermission>} />
           <Route path="whatsapp-templates" element={<RequirePermission permission={PERMISSIONS.WHATSAPP_TEMPLATES_MANAGE}><WhatsAppTemplates /></RequirePermission>} />
           <Route path="audit-logs" element={<RequirePermission permission={PERMISSIONS.AUDIT_LOGS_VIEW}><AuditLogs /></RequirePermission>} />
           <Route path="backups" element={<RequirePermission permission={PERMISSIONS.BACKUPS_MANAGE}><Backups /></RequirePermission>} />

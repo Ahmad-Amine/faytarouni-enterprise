@@ -43,7 +43,9 @@ exports.getMe = catchAsync(async (req, res) => {
 });
 
 exports.updateProfile = catchAsync(async (req, res) => {
-  const user = await userRepository.updateById(req.user._id, req.body);
+  const updates = { ...req.body };
+  if (updates.whatsappOptIn !== undefined) updates.whatsappOptInAt = updates.whatsappOptIn ? new Date() : null;
+  const user = await userRepository.updateById(req.user._id, updates);
   return new ApiResponse(200, { user: user.toSafeObject() }, 'Profile updated.').send(res);
 });
 

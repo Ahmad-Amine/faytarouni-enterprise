@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const { ALL_PERMISSIONS } = require('../config/constants');
+const { ALL_PERMISSIONS, WHATSAPP_EVENTS } = require('../config/constants');
 
 const httpsUrlOrEmpty = z.string().trim().refine((value) => {
   if (!value) return true;
@@ -76,6 +76,9 @@ const whatsappTemplateSchema = z.object({
     name: z.string().trim().min(1, 'Name is required.'),
     body: z.string().trim().min(1, 'Message body is required.'),
     description: z.string().optional(),
+    metaName: z.string().trim().regex(/^[a-z0-9_]*$/, 'Use lowercase letters, numbers and underscores.').max(512).optional(),
+    event: z.enum(['', ...WHATSAPP_EVENTS]).optional(),
+    metaLanguage: z.union([z.literal(''), z.string().trim().regex(/^[a-z]{2,3}(_[A-Z]{2})?$/, 'Use a language code such as en, ar or en_US.')]).optional(),
   }),
 });
 

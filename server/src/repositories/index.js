@@ -11,6 +11,7 @@ const { Supplier, Product } = require('../models/Inventory');
 const PurchaseOrder = require('../models/PurchaseOrder');
 const { Coupon, Tax } = require('../models/Commerce');
 const { Settings, EmailTemplate, WhatsAppTemplate, Notification, AuditLog } = require('../models/System');
+const { WhatsAppConversation, WhatsAppMessage } = require('../models/WhatsApp');
 
 module.exports = {
   userRepository: require('./UserRepository'),
@@ -32,6 +33,8 @@ module.exports = {
   settingsRepository: new BaseRepository(Settings),
   emailTemplateRepository: new BaseRepository(EmailTemplate),
   whatsAppTemplateRepository: new BaseRepository(WhatsAppTemplate),
+  whatsAppConversationRepository: new BaseRepository(WhatsAppConversation),
+  whatsAppMessageRepository: new BaseRepository(WhatsAppMessage),
   notificationRepository: new BaseRepository(Notification),
   auditLogRepository: new BaseRepository(AuditLog),
 };

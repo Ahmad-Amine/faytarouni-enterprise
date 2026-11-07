@@ -27,6 +27,10 @@ export function interpolateTemplate(template, vars = {}) {
   return String(template || '').replace(/\{\{(\w+)\}\}/g, (_, key) => (vars[key] !== undefined && vars[key] !== null ? vars[key] : ''));
 }
 
+export function templatePlaceholders(template) {
+  return [...new Set([...String(template || '').matchAll(/\{\{(\w+)\}\}/g)].map((match) => match[1]))];
+}
+
 export function socialLink(contact) {
   if (contact.type === "whatsapp") return whatsappLink(contact.value);
   if (contact.type === "phone") return `tel:${contact.value}`;

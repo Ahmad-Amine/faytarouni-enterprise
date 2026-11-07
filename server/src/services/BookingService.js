@@ -13,6 +13,7 @@ const ApiError = require('../utils/ApiError');
 const { APPOINTMENT_STATUS, APPOINTMENT_SOURCE, COUPON_TYPE } = require('../config/constants');
 const notificationService = require('./NotificationService');
 const emailService = require('./EmailService');
+const whatsappService = require('./WhatsAppService');
 const defaultTemplates = require('../emails/defaultTemplates');
 const auditService = require('./AuditService');
 const { withBookingMutex } = require('../utils/bookingMutex');
@@ -286,6 +287,31 @@ async function createAppointment(input, actorUser = null) {
 
   return appointment;
 }
+// Customers already know about changes they made themselves. Not awaited by
+// callers: a slow or failed WhatsApp send must not hold up the booking.
+async function notifyAppointmentWhatsApp(event, appointment, barberName, actorUser) {
+  const customerId = appointment.customer?._id || appointment.customer;
+  if (customerId && actorUser && String(customerId) === String(actorUser._id)) return;
+
+  const timeFormat = await getTimeFormat();
+  await whatsappService.notifyEvent(event, {
+    phone: appointment.customer?.phone || appointment.customerPhone,
+    name: appointment.customerName,
+    vars: {
+      name: appointment.customerName,
+      date: formatCalendarDate(appointment.date),
+      time: formatTime(appointment.startTime, timeFormat),
+      barberName: barberName || '',
+    },
+  });
+}
+
+const STATUS_WHATSAPP_EVENTS = {
+  [APPOINTMENT_STATUS.CONFIRMED]: 'appointment_confirmed',
+  [APPOINTMENT_STATUS.REJECTED]: 'appointment_rejected',
+  [APPOINTMENT_STATUS.CANCELED]: 'appointment_canceled',
+};
+
 async function changeStatus(appointmentId, status, actorUser, req, extra = {}) {
   const appointment = await appointmentRepository.findById(appointmentId, { populate: 'barber customer' });
   if (!appointment) throw ApiError.notFound('Appointment not found.');
@@ -320,6 +346,10 @@ async function changeStatus(appointmentId, status, actorUser, req, extra = {}) {
       `Your appointment on ${formatCalendarDate(appointment.date)} is now ${status}.`,
       '/my-appointments'
     );
+  }
+
+  if (STATUS_WHATSAPP_EVENTS[status] && previousStatus !== status) {
+    notifyAppointmentWhatsApp(STATUS_WHATSAPP_EVENTS[status], appointment, appointment.barber?.name, actorUser).catch(() => {});
   }
 
   if (status === APPOINTMENT_STATUS.COMPLETED && previousStatus !== APPOINTMENT_STATUS.COMPLETED && appointment.customer) {
@@ -432,6 +462,8 @@ async function rescheduleAppointment(appointmentId, { date, startTime }, actorUs
     entityId: updated._id,
     changes: { from: previous, to: { date: day, startTime, endTime } },
   });
+
+  notifyAppointmentWhatsApp('appointment_rescheduled', updated, barber?.name, actorUser).catch(() => {});
 
   return updated;
 }

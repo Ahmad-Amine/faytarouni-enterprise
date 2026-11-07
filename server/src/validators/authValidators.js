@@ -13,6 +13,7 @@ const registerSchema = z.object({
     phone: z.string().trim().refine(isSupportedE164, 'Phone number must include a supported country code.'),
     password: z.string().min(8, 'Password must be at least 8 characters.'),
     birthday: z.string().optional().nullable(),
+    whatsappOptIn: z.boolean().optional(),
   }),
 });
 
@@ -44,6 +45,7 @@ const updateProfileSchema = z.object({
     phone: z.string().trim().refine(isSupportedE164, 'Phone number must include a supported country code.').optional(),
     birthday: z.string().optional().nullable(),
     avatarUrl: httpsUrlOrEmpty.optional(),
+    whatsappOptIn: z.boolean().optional(),
   }),
 });
 

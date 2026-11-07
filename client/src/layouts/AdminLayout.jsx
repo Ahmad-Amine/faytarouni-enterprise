@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import { usePermission } from '../hooks/usePermission';
 import { useSocket } from '../hooks/useSocket';
-import { adminNotificationService } from '../services/adminService';
+import { adminNotificationService, adminWhatsAppService } from '../services/adminService';
 import { PERMISSIONS } from '../utils/permissions';
 import WhatsAppButton from '../components/WhatsAppButton';
 
@@ -27,6 +27,13 @@ export const NAV_GROUPS = [
       { to: '/admin/customers', label: 'Customers', permission: PERMISSIONS.CUSTOMERS_VIEW },
       { to: '/admin/staff', label: 'Staff', permission: PERMISSIONS.STAFF_MANAGE },
       { to: '/admin/reviews', label: 'Reviews', permission: PERMISSIONS.REPORTS_VIEW },
+    ],
+  },
+  {
+    label: 'Messaging',
+    items: [
+      { to: '/admin/whatsapp', label: 'WhatsApp Inbox', permission: PERMISSIONS.WHATSAPP_INBOX },
+      { to: '/admin/staff-broadcast', label: 'Staff Broadcast', permission: PERMISSIONS.STAFF_BROADCAST },
     ],
   },
   {
@@ -68,12 +75,13 @@ export const NAV_GROUPS = [
   },
 ];
 
-function NavItem({ item, onNavigate }) {
+function NavItem({ item, badge = 0, onNavigate }) {
   const allowed = usePermission(item.permission);
   if (!allowed) return null;
   return (
     <NavLink to={item.to} end={item.end} className={({ isActive }) => `admin-nav-link${isActive ? ' active' : ''}`} onClick={onNavigate}>
       {item.label}
+      {badge > 0 && <span className="wa-unread" style={{ marginInlineStart: 8 }}>{badge}</span>}
     </NavLink>
   );
 }
@@ -86,6 +94,14 @@ export default function AdminLayout() {
   const bellRef = useRef(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const queryClient = useQueryClient();
+  const canUseInbox = usePermission(PERMISSIONS.WHATSAPP_INBOX);
+
+  const { data: whatsappUnread } = useQuery({
+    queryKey: ['admin', 'whatsapp', 'unread'],
+    queryFn: adminWhatsAppService.unread,
+    enabled: canUseInbox,
+    refetchInterval: 30000,
+  });
 
   const { data } = useQuery({
     queryKey: ['admin', 'notifications'],
@@ -102,9 +118,12 @@ export default function AdminLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [bellOpen]);
 
-  useSocket(() => {
-    queryClient.invalidateQueries({ queryKey: ['admin', 'notifications'] });
-  });
+  useSocket(
+    () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'notifications'] });
+    },
+    { 'whatsapp:update': () => queryClient.invalidateQueries({ queryKey: ['admin', 'whatsapp'] }) }
+  );
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -127,7 +146,12 @@ export default function AdminLayout() {
           <div key={group.label}>
             <div className="admin-nav-group">{group.label}</div>
             {group.items.map((item) => (
-              <NavItem key={item.to} item={item} onNavigate={() => setMobileNavOpen(false)} />
+              <NavItem
+                key={item.to}
+                item={item}
+                badge={item.to === '/admin/whatsapp' ? whatsappUnread?.unread : 0}
+                onNavigate={() => setMobileNavOpen(false)}
+              />
             ))}
           </div>
         ))}

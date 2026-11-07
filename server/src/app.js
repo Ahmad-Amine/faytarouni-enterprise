@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const publicRoutes = require('./routes/publicRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
 
 const app = express();
 
@@ -36,6 +37,10 @@ app.use(
     exposedHeaders: ['Content-Disposition'],
   })
 );
+
+// Before the body parsers and CSRF: Meta signs the raw body and can't send a
+// CSRF token. Its signature is checked in the controller instead.
+app.use(`${env.apiPrefix}/webhooks`, webhookRoutes);
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));

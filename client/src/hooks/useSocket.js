@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 
-export function useSocket(onNotification) {
+export function useSocket(onNotification, events = {}) {
   const user = useSelector(selectUser);
   const socketRef = useRef(null);
 
@@ -19,6 +19,7 @@ export function useSocket(onNotification) {
     socketRef.current = socket;
 
     if (onNotification) socket.on('notification', onNotification);
+    Object.entries(events).forEach(([name, handler]) => socket.on(name, handler));
 
     return () => {
       socket.disconnect();
